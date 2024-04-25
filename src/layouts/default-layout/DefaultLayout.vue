@@ -36,12 +36,20 @@
   <KTScrollTop />
   <!--begin::Loading markup-->
   <div id="splash-screen" class="splash-screen">
-      <img :src="getAssetPath('media/logos/logo.svg')" class="dark-logo" alt="dark logo" />
-      <img :src="getAssetPath('media/logos/logo.svg')" class="light-logo" alt="logo" />
-      <div class="loader-wrapper">
+    <img
+      :src="getAssetPath('media/logos/logo.svg')"
+      class="dark-logo"
+      alt="dark logo"
+    />
+    <img
+      :src="getAssetPath('media/logos/logo.svg')"
+      class="light-logo"
+      alt="logo"
+    />
+    <div class="loader-wrapper">
       <span class="loader"></span>
       <span class="loading-text">Loading...</span>
-      </div>
+    </div>
   </div>
   <!--end::Loading markup-->
 </template>
@@ -60,12 +68,6 @@ import KTAside from "@/layouts/default-layout/components/aside/Aside.vue";
 import KTHeader from "@/layouts/default-layout/components/header/Header.vue";
 import KTFooter from "@/layouts/default-layout/components/footer/Footer.vue";
 import KTScrollTop from "@/layouts/default-layout/components/extras/ScrollTop.vue";
-import KTActivivityDrawer from "@/layouts/default-layout/components/drawers/ActivityDrawer.vue";
-import KTCreateApp from "@/components/modals/wizards/CreateAppModal.vue";
-import KTInviteFriendsModal from "@/components/modals/general/InviteFriendsModal.vue";
-import KTHelpDrawer from "@/layouts/default-layout/components/extras/HelpDrawer.vue";
-import KTToolButtons from "@/layouts/default-layout/components/extras/ToolButtons.vue";
-import KTDrawerMessenger from "@/layouts/default-layout/components/extras/MessengerDrawer.vue";
 import { reinitializeComponents } from "@/core/plugins/keenthemes";
 import {
   asideEnabled,
@@ -86,12 +88,6 @@ export default defineComponent({
     KTHeader,
     KTFooter,
     KTScrollTop,
-    KTCreateApp,
-    KTInviteFriendsModal,
-    KTActivivityDrawer,
-    KTHelpDrawer,
-    KTToolButtons,
-    KTDrawerMessenger,
   },
   setup() {
     const route = useRoute();

@@ -23,13 +23,13 @@ class ApiService {
       import.meta.env.VITE_APP_API_URL;
   }
 
-  public static setPostAsFile() : void{
+  public static setPostAsFile(): void {
     ApiService.vueInstance.axios.defaults.headers.common["Content-Type"] =
-    "multipart/form-data";
+      "multipart/form-data";
   }
-  public static removePostAsFile() : void{
+  public static removePostAsFile(): void {
     ApiService.vueInstance.axios.defaults.headers.common["Content-Type"] =
-    "application/json";
+      "application/json";
   }
 
   /**
@@ -43,8 +43,7 @@ class ApiService {
     ApiService.vueInstance.axios.defaults.headers.common["Accept"] =
       "application/json";
     ApiService.vueInstance.axios.defaults.headers.common["Content-Type"] =
-    "application/json";
-    
+      "application/json";
   }
 
   /**

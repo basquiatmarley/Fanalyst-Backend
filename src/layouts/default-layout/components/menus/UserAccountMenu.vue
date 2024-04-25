@@ -16,11 +16,11 @@
         <!--begin::Username-->
         <div class="d-flex flex-column">
           <div class="fw-bold d-flex align-items-center fs-5">
-            {{ store.user ? store.user.firstName : 'Loading...' }}
+            {{ store.user ? store.user.firstName : "Loading..." }}
           </div>
-          <a href="#" class="fw-semibold text-muted text-hover-primary fs-7"
-            >{{ store.user ? store.user.email : 'Loading...' }}</a
-          >
+          <a href="#" class="fw-semibold text-muted text-hover-primary fs-7">{{
+            store.user ? store.user.email : "Loading..."
+          }}</a>
         </div>
         <!--end::Username-->
       </div>
@@ -50,7 +50,7 @@
 
 <script lang="ts">
 import { getAssetPath } from "@/core/helpers/assets";
-import {  defineComponent, onMounted } from "vue";
+import { defineComponent, onMounted } from "vue";
 import { useAuthStore } from "@/stores/auth";
 import { useRouter } from "vue-router";
 
@@ -60,11 +60,10 @@ export default defineComponent({
   setup() {
     const router = useRouter();
     const store = useAuthStore();
-    
+
     const signOut = () => {
-      
       store.logout();
-      router.replace({ name: "" ,force:true});
+      router.replace({ name: "", force: true });
     };
 
     onMounted(() => {});

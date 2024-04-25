@@ -27,7 +27,8 @@ const routes: Array<RouteRecordRaw> = [
       {
         path: "/pooling-requests",
         name: "pooling-requests-list",
-        component: () => import("@/views/crafted/pages/pooling_requests/List.vue"),
+        component: () =>
+          import("@/views/crafted/pages/pooling_requests/List.vue"),
         meta: {
           pageTitle: "Pooling Requests List",
           breadcrumbs: ["Pooling Requests List"],
@@ -48,7 +49,7 @@ const routes: Array<RouteRecordRaw> = [
         component: () => import("@/views/crafted/pages/clubs/View.vue"),
         meta: {
           pageTitle: "Clubs View",
-          breadcrumbs: ["Clubs","Clubs View"],
+          breadcrumbs: ["Clubs", "Clubs View"],
         },
       },
       {
@@ -57,7 +58,7 @@ const routes: Array<RouteRecordRaw> = [
         component: () => import("@/views/crafted/pages/clubs/Edit.vue"),
         meta: {
           pageTitle: "Clubs Edit",
-          breadcrumbs: ["Clubs","Clubs Edit"],
+          breadcrumbs: ["Clubs", "Clubs Edit"],
         },
       },
       {
@@ -75,7 +76,7 @@ const routes: Array<RouteRecordRaw> = [
         component: () => import("@/views/crafted/pages/sports_groups/View.vue"),
         meta: {
           pageTitle: "Sports Groups View",
-          breadcrumbs: ["Sports Groups","Sports Groups View"],
+          breadcrumbs: ["Sports Groups", "Sports Groups View"],
         },
       },
       {
@@ -84,7 +85,7 @@ const routes: Array<RouteRecordRaw> = [
         component: () => import("@/views/crafted/pages/sports_groups/Edit.vue"),
         meta: {
           pageTitle: "Sports Groups Edit",
-          breadcrumbs: ["Sports Groups","Sports Groups Edit"],
+          breadcrumbs: ["Sports Groups", "Sports Groups Edit"],
         },
       },
       {
@@ -102,7 +103,7 @@ const routes: Array<RouteRecordRaw> = [
         component: () => import("@/views/crafted/pages/sports/View.vue"),
         meta: {
           pageTitle: "Sports View",
-          breadcrumbs: ["Sports Groups","Sports View"],
+          breadcrumbs: ["Sports Groups", "Sports View"],
         },
       },
       {
@@ -111,7 +112,7 @@ const routes: Array<RouteRecordRaw> = [
         component: () => import("@/views/crafted/pages/sports/Edit.vue"),
         meta: {
           pageTitle: "Sports Edit",
-          breadcrumbs: ["Sports","Sports Edit"],
+          breadcrumbs: ["Sports", "Sports Edit"],
         },
       },
       {
@@ -129,7 +130,7 @@ const routes: Array<RouteRecordRaw> = [
         component: () => import("@/views/crafted/pages/events/View.vue"),
         meta: {
           pageTitle: "Sports View",
-          breadcrumbs: ["Sports Groups","Sports View"],
+          breadcrumbs: ["Sports Groups", "Sports View"],
         },
       },
       {
@@ -138,7 +139,7 @@ const routes: Array<RouteRecordRaw> = [
         component: () => import("@/views/crafted/pages/events/Edit.vue"),
         meta: {
           pageTitle: "Sports Edit",
-          breadcrumbs: ["Sports","Sports Edit"],
+          breadcrumbs: ["Sports", "Sports Edit"],
         },
       },
     ],

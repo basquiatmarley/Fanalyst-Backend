@@ -16,15 +16,15 @@
         <!--begin::Info-->
         <div class="flex-grow-1 me-2">
           <!--begin::Username-->
-          <a href="#" class="text-white text-hover-primary fs-6 fw-semibold"
-            >{{ store.user ? store.user.firstName : 'Loading...' }}</a
-          >
+          <a href="#" class="text-white text-hover-primary fs-6 fw-semibold">{{
+            store.user ? store.user.firstName : "Loading..."
+          }}</a>
           <!--end::Username-->
 
           <!--begin::Description-->
-          <span class="text-gray-600 fw-semibold d-block fs-8 mb-1"
-            >{{ store.user ? store.user.role : 'Loading...' }}</span
-          >
+          <span class="text-gray-600 fw-semibold d-block fs-8 mb-1">{{
+            store.user ? store.user.role : "Loading..."
+          }}</span>
           <!--end::Description-->
 
           <!--begin::Label-->
@@ -58,12 +58,11 @@
     <!--end::Wrapper-->
   </div>
   <!--end::User-->
-
 </template>
 
 <script lang="ts">
 import { getAssetPath } from "@/core/helpers/assets";
-import { defineComponent, onBeforeMount, onMounted, watch } from "vue";
+import { defineComponent, onMounted } from "vue";
 import UserMenu from "@/layouts/default-layout/components/menus/UserAccountMenu.vue";
 import { useAuthStore } from "@/stores/auth";
 const store = useAuthStore();
@@ -74,9 +73,7 @@ export default defineComponent({
     UserMenu,
   },
   setup() {
-    onMounted(() => {
-      
-    });
+    onMounted(() => {});
 
     return {
       store,

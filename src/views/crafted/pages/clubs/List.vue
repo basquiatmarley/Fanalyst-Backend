@@ -1,30 +1,29 @@
 <template>
   <!--begin::Timeline-->
   <div class="card">
-      <div class="card-header">
-          <h3 class="card-title">Clubs List</h3>
-          <div class="card-toolbar">
-              <!-- <button type="button" class="btn btn-sm btn-light">
+    <div class="card-header">
+      <h3 class="card-title">Clubs List</h3>
+      <div class="card-toolbar">
+        <!-- <button type="button" class="btn btn-sm btn-light">
                   Add New
               </button> -->
-          </div>
       </div>
-      <div class="card-body">
-        <input 
-        v-model="searchQuery" 
-        type="text" 
-        class="form-control mb-4" 
-        placeholder="Search by Club name" 
+    </div>
+    <div class="card-body">
+      <input
+        v-model="searchQuery"
+        type="text"
+        class="form-control mb-4"
+        placeholder="Search by Club name"
       />
-        <Datatable
-          :loading="loading"
-          :header="tableHeader"
-          :data="tableData"
-          @on-sort="handleSort"
-        >
-
-          <template v-slot:action="{ row: data }">
-            <!-- <a href="#" class="btn btn-icon btn-sm me-2 btn-light">
+      <Datatable
+        :loading="loading"
+        :header="tableHeader"
+        :data="tableData"
+        @on-sort="handleSort"
+      >
+        <template v-slot:action="{ row: data }">
+          <!-- <a href="#" class="btn btn-icon btn-sm me-2 btn-light">
               <i class="ki-duotone ki-trash-square text-danger fs-2x">
                 <span class="path1"></span>
                 <span class="path2"></span>
@@ -32,40 +31,46 @@
                 <span class="path4"></span>
               </i>
             </a> -->
-            <router-link
-                    class="btn btn-icon btn-sm me-2 btn-light"
-                    :to="{ name: 'clubs-edit', params: { id: data.id } }"
-                  >
-              <KTIcon icon-name="pencil" icon-class=" text-success fs-2" />
-            </router-link>
-            <router-link
-                    class="btn btn-icon btn-sm me-2 btn-light"
-                    :to="{ name: 'clubs-view', params: { id: data.id } }"
-                  >
-              <KTIcon icon-name="eye" icon-class=" text-info fs-2" />
-            </router-link>
-          </template>
-          <template v-slot:imageUrl="{ row: data }">
-            <img  :src="(data.imageUrl != '' ? getApiUrl('.sandbox/'+data.imageUrl) : 'https://placehold.jp/150x100.png')" :class="`w-100px`" alt="image"  />
-          </template>
-          <template v-slot:sportsGroup.title="{ row: data }">
-            {{ data.sportsGroup.title }}
-          </template>
-          <template v-slot:name="{ row: data }">
-            {{ data.name }}
-          </template>
-          <template v-slot:status="{ row: data }">
-            <div class="text-center">
-              <span v-if="data.status === 1" :class="`badge badge-light-success`">
-                Active
-              </span>
-              <span v-else="data.status === 0" :class="`badge badge-light-danger`">
-                Inactive
-              </span>
-            </div>
-          </template>
-        </Datatable>
-      </div>
+          <router-link
+            class="btn btn-icon btn-sm me-2 btn-light"
+            :to="{ name: 'clubs-edit', params: { id: data.id } }"
+          >
+            <KTIcon icon-name="pencil" icon-class=" text-success fs-2" />
+          </router-link>
+          <router-link
+            class="btn btn-icon btn-sm me-2 btn-light"
+            :to="{ name: 'clubs-view', params: { id: data.id } }"
+          >
+            <KTIcon icon-name="eye" icon-class=" text-info fs-2" />
+          </router-link>
+        </template>
+        <template v-slot:imageUrl="{ row: data }">
+          <img
+            :src="
+              data.imageUrl != ''
+                ? getApiUrl('.sandbox/' + data.imageUrl)
+                : 'https://placehold.jp/150x100.png'
+            "
+            :class="`w-100px`"
+            alt="image"
+          />
+        </template>
+        <template v-slot:sportsGroup_title="{ row: data }">
+          {{ data.sportsGroup.title }}
+        </template>
+        <template v-slot:name="{ row: data }">
+          {{ data.name }}
+        </template>
+        <template v-slot:status="{ row: data }">
+          <div class="text-center">
+            <span v-if="data.status === 1" :class="`badge badge-light-success`">
+              Active
+            </span>
+            <span v-else :class="`badge badge-light-danger`"> Inactive </span>
+          </div>
+        </template>
+      </Datatable>
+    </div>
   </div>
   <!--end::Timeline-->
 </template>
@@ -79,7 +84,9 @@ import ApiService from "@/core/services/ApiService";
 const getData = async (params) => {
   try {
     ApiService.setHeader();
-    const response = await ApiService.query("clubs", { params : {filter: params }});
+    const response = await ApiService.query("clubs", {
+      params: { filter: params },
+    });
     return response.data;
   } catch (error) {
     console.error("Error fetching data:", error);
@@ -93,7 +100,6 @@ export default defineComponent({
     Datatable,
   },
   setup() {
-    
     const loading = ref(true);
     const searchQuery = ref("");
     const tableHeader = ref([
@@ -110,7 +116,7 @@ export default defineComponent({
       },
       {
         columnName: "Sport Group",
-        columnLabel: "sportsGroup.title",
+        columnLabel: "sportsGroup_title",
         columnWidth: 200,
         sortEnabled: true,
       },
@@ -129,8 +135,8 @@ export default defineComponent({
     ]);
     const tableData = ref([]);
     const params = ref<any>({
-      where: {}, 
-      order:{},
+      where: {},
+      order: {},
       include: [
         {
           relation: "sportsGroup",
@@ -148,7 +154,7 @@ export default defineComponent({
     const handleSort = async (s) => {
       let label = s.label;
       if (label) {
-        label = label.replace(/\./g, " ");
+        label = label.replace(/_/g, " ");
         params.value.order = [`${label} ${s.order}`];
         await fetchData(); // Fetch data with new sort order
       }
@@ -157,32 +163,28 @@ export default defineComponent({
     const filteredData = async () => {
       params.value.where = {
         or: [
-          { "name": { like: `%${searchQuery.value}%` } },
+          { name: { like: `%${searchQuery.value}%` } },
           // {"`SportsGroup`.`title`": { like: `%${searchQuery.value}%` }}
         ],
       };
       params.value.include = [
-          {
-            relation: "sportsGroup",
-            required: true, // Ensure only results with a related sportsGroup are included
-            // scope: {
-            //   where: {title : 'Soccer'}
-            // },
-          },
-        ];
+        {
+          relation: "sportsGroup",
+          required: true, // Ensure only results with a related sportsGroup are included
+          // scope: {
+          //   where: {title : 'Soccer'}
+          // },
+        },
+      ];
       await fetchData(); // Fetch data with updated filter
     };
 
-    watch(() => searchQuery.value,
-      filteredData
-    );
+    watch(() => searchQuery.value, filteredData);
 
     onMounted(() => {
-      
       fetchData(); // Calls `fetchData` with the default `params`
     });
-    
-    
+
     return {
       getApiUrl,
       loading,

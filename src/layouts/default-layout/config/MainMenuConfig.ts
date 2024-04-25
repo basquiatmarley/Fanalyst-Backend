@@ -16,39 +16,37 @@ const MainMenuConfig: Array<MenuItem> = [
     route: "/master-data",
     pages: [
       {
-        heading : "Pooling Requests",
-        route : "/pooling-requests",
+        heading: "Pooling Requests",
+        route: "/pooling-requests",
         keenthemesIcon: "element-11",
         bootstrapIcon: "bi-app-indicator",
       },
       {
-        heading : "Clubs",
-        route : "/clubs",
+        heading: "Clubs",
+        route: "/clubs",
         keenthemesIcon: "element-11",
         bootstrapIcon: "bi-app-indicator",
       },
       {
-        heading : "Events",
-        route : "/events",
+        heading: "Events",
+        route: "/events",
         keenthemesIcon: "element-11",
         bootstrapIcon: "bi-app-indicator",
       },
       {
-        heading : "Sports Groups",
-        route : "/sports-groups",
+        heading: "Sports Groups",
+        route: "/sports-groups",
         keenthemesIcon: "element-11",
         bootstrapIcon: "bi-app-indicator",
       },
       {
-        heading : "Sports",
-        route : "/sports",
+        heading: "Sports",
+        route: "/sports",
         keenthemesIcon: "element-11",
         bootstrapIcon: "bi-app-indicator",
       },
-    ]
+    ],
   },
-  
-
 ];
 
 export default MainMenuConfig;

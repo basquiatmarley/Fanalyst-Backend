@@ -52,10 +52,10 @@ function toJSON(value: string | JSON): JSON | undefined {
   }
 }
 
-function dateTolocaleFormat(dateUtc : string){
+function dateTolocaleFormat(dateUtc: string) {
   const utcDate = new Date(dateUtc);
   // Convert UTC date to a local time string
-  return  utcDate.toLocaleString();
+  return utcDate.toLocaleString();
 }
 
 export {

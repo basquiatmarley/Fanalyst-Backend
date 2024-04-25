@@ -15,7 +15,6 @@
       </th>
       <template v-for="(column, i) in header" :key="i">
         <th
-          
           @click="onSort(column.columnLabel, column.sortEnabled)"
           :style="{
             minWidth: column.columnWidth ? `${column.columnWidth}px` : '0',

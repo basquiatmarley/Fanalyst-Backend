@@ -45,7 +45,7 @@
               <div class="row mb-6">
                 <!--begin::Label-->
                 <label class="col-lg-4 col-form-label fw-semibold fs-6"
-                  >Image</label
+                  >Icon</label
                 >
                 <!--end::Label-->
 
@@ -54,8 +54,37 @@
                   <Field
                     type="file"
                     @change="changeFileHandle"
-                    accept="image/png, image/jpg, image/jpeg, image/webp"
+                    accept="image/svg+xml"
                     name="image"
+                    class="form-control form-control-lg form-control-solid"
+                    placeholder="Image"
+                    aria-readonly="readonly"
+                  />
+
+                  <!--begin::Hint-->
+                  <div class="form-text">
+                    Allowed file types: png, jpg, jpeg.
+                  </div>
+                  <!--end::Hint-->
+                </div>
+                <!--end::Col-->
+              </div>
+              <!--end::Input group-->
+              <!--begin::Input group-->
+              <div class="row mb-6">
+                <!--begin::Label-->
+                <label class="col-lg-4 col-form-label fw-semibold fs-6"
+                  >Background Image</label
+                >
+                <!--end::Label-->
+
+                <!--begin::Col-->
+                <div class="col-lg-8">
+                  <Field
+                    type="file"
+                    @change="changeFileBg"
+                    accept="image/png, image/jpg, image/jpeg, image/webp"
+                    name="background"
                     class="form-control form-control-lg form-control-solid"
                     placeholder="Image"
                     aria-readonly="readonly"
@@ -242,6 +271,7 @@ export default defineComponent({
     const recordId = route.params.id; // Get 'id' from the route
     const record = ref<SportsGroup>({} as SportsGroup);
     const fileSelected = ref([]);
+    const fileSelectedBg = ref([]);
     const fetchRecordData = async () => {
       const data = await getData(recordId);
       record.value = data;
@@ -249,6 +279,10 @@ export default defineComponent({
     const changeFileHandle = (event) => {
       const file = event.target.files;
       fileSelected.value = file;
+    };
+    const changeFileBg = (event) => {
+      const file = event.target.files;
+      fileSelectedBg.value = file;
     };
     const validationSubmit = Yup.object().shape({
       title: Yup.string().required().label("Title"),
@@ -265,8 +299,15 @@ export default defineComponent({
             record.value.imageUrl = uploadFilePost.files[0];
           }
         }
+        if (fileSelectedBg.value) {
+          const uploadFilePost = await uploadFile(fileSelectedBg.value);
+          if (uploadFilePost.files) {
+            record.value.backgroundUrl = uploadFilePost.files[0];
+          }
+        }
         var params = {
           imageUrl: record.value.imageUrl,
+          backgroundUrl: record.value.backgroundUrl,
           status: record.value.status ? 1 : 0,
           statusHotest: record.value.statusHotest ? 1 : 0,
           title: record.value.title,
@@ -318,6 +359,7 @@ export default defineComponent({
       saveSubmitHandle,
       dateTolocaleFormat,
       record,
+      changeFileBg,
       getAssetPath,
       validationSubmit,
     };

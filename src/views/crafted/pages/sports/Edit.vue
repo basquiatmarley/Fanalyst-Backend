@@ -53,7 +53,7 @@
                   <Field
                     type="file"
                     @change="changeFileHandle"
-                    accept="image/png, image/jpg, image/jpeg, image/webp"
+                    accept="image/svg+xml"
                     name="image"
                     class="form-control form-control-lg form-control-solid"
                     placeholder="Image"

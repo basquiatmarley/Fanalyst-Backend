@@ -293,7 +293,7 @@ export default defineComponent({
         submitButtonEl.value.setAttribute("data-kt-indicator", "on");
         submitButtonEl.value.setAttribute("disabled", "disabled");
         // console.log("status : "+ record.value.status)
-        if (fileSelected.value) {
+        if (fileSelected.value.length > 0) {
           const uploadFilePost = await uploadFile(fileSelected.value);
           if (uploadFilePost.files) {
             record.value.imageUrl = uploadFilePost.files[0];

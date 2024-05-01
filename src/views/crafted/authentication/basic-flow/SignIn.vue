@@ -16,23 +16,23 @@
         <!--end::Title-->
 
         <!--begin::Link-->
-        <div class="text-gray-500 fw-semibold fs-4">
-          New Here?
+        <div class="text-warning fw-semibold fs-4">
+          Pellentesque eu metus metus. Suspendisse arcu nunc, ullamcorper a varius in, luctus vel lorem.
 
-          <router-link to="/sign-up" class="link-primary fw-bold">
+          <!-- <router-link to="/sign-up" class="link-primary fw-bold">
             Create an Account
-          </router-link>
+          </router-link> -->
         </div>
         <!--end::Link-->
       </div>
       <!--begin::Heading-->
 
-      <div class="mb-10 bg-light-info p-8 rounded">
+      <!-- <div class="mb-10 bg-light-info p-8 rounded">
         <div class="text-info">
           Use account <strong>admin@demo.com</strong> and password
           <strong>demo</strong> to continue.
         </div>
-      </div>
+      </div> -->
 
       <!--begin::Input group-->
       <div class="fv-row mb-10">
@@ -68,9 +68,9 @@
           <!--end::Label-->
 
           <!--begin::Link-->
-          <router-link to="/password-reset" class="link-primary fs-6 fw-bold">
+          <!-- <router-link to="/password-reset" class="link-primary fs-6 fw-bold">
             Forgot Password ?
-          </router-link>
+          </router-link> -->
           <!--end::Link-->
         </div>
         <!--end::Wrapper-->

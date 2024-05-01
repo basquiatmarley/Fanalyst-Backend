@@ -1,26 +1,17 @@
 <template>
   <div>
-    <!-- If club data is null, display a loading message or spinner -->
-    <div v-if="record === null">
-      <p>Loading data details...</p>
-      <!-- Optionally, add a loading spinner -->
-      <div class="spinner"></div>
-    </div>
-
-    <!--begin::FORM-->
-    <div v-else class="">
       <!--begin::Basic info-->
       <div class="card mb-5 mb-xl-10">
         <!--begin::Card header-->
         <div class="card-header border-0 cursor-pointer">
           <!--begin::Card title-->
           <div class="card-title m-0">
-            <h3 class="fw-bold m-0">Edit Sport</h3>
+            <h3 class="fw-bold m-0">Create User</h3>
           </div>
           <div class="card-toolbar">
             <router-link
               class="btn btn-sm btn-success me-3"
-              :to="{ name: 'sports-list' }"
+              :to="{ name: 'users-list' }"
             >
               <span>Back</span>
             </router-link>
@@ -36,6 +27,7 @@
             id="kt_form_edit_form"
             class="form"
             novalidate
+            :validation-schema="validationForm"
             @submit="saveSubmitHandle()"
           >
             <!--begin::Card body-->
@@ -53,7 +45,7 @@
                   <Field
                     type="file"
                     @change="changeFileHandle"
-                    accept="image/svg+xml"
+                    accept="image/png, image/jpg, image/jpeg, image/webp"
                     name="image"
                     class="form-control form-control-lg form-control-solid"
                     placeholder="Image"
@@ -69,29 +61,83 @@
                 <!--end::Col-->
               </div>
               <!--end::Input group-->
-              <!--begin::Input group-->
-              <div class="row mb-6">
+               <!--begin::Input group-->
+               <div class="row mb-6">
                 <!--begin::Label-->
                 <label class="col-lg-4 col-form-label fw-semibold fs-6">
-                  <span class="required">Sports Group</span>
-
-                  <i
-                    class="fas fa-exclamation-circle ms-1 fs-7"
-                    data-bs-toggle="tooltip"
-                    title="Can edit sports group title"
-                  ></i>
+                  <span class="required">Role</span>
                 </label>
                 <!--end::Label-->
 
                 <!--begin::Col-->
                 <div class="col-lg-8 fv-row">
-                  <input
-                    type="text"
+                  <Field
+                    as="select"
+                    name="role"
                     class="form-control form-control-lg form-control-solid"
-                    :value="record.sportsGroup?.title"
-                    placeholder="Sport title"
-                    readonly="true"
-                    name="sport_group_title"
+                    placeholder="Role"
+                    aria-readonly="readonly"
+                    v-model="record.role"
+                    
+                  >
+                      <option value="" disabled>Select a role</option>
+                      <option value="super-admin">Super Admin</option>
+                      <option value="member">Member</option>
+                  </Field>
+
+                  <div class="fv-plugins-message-container">
+                    <div class="fv-help-block">
+                      <ErrorMessage name="role" />
+                    </div>
+                  </div>
+                </div>
+                <!--end::Col-->
+              </div>
+              <!--end::Input group-->
+              <!--begin::Input group-->
+              <div class="row mb-6">
+                <!--begin::Label-->
+                <label class="col-lg-4 col-form-label fw-semibold fs-6">
+                  <span class="required">First Name</span>
+                </label>
+                <!--end::Label-->
+
+                <!--begin::Col-->
+                <div class="col-lg-8 fv-row">
+                  <Field
+                    type="text"
+                    name="firstName"
+                    class="form-control form-control-lg form-control-solid"
+                    placeholder="First name"
+                    aria-readonly="readonly"
+                    v-model="record.firstName"
+                  />
+                  <div class="fv-plugins-message-container">
+                    <div class="fv-help-block">
+                      <ErrorMessage name="firstName" />
+                    </div>
+                  </div>
+                </div>
+                <!--end::Col-->
+              </div>
+              <!--end::Input group-->
+              <!--begin::Input group-->
+              <div class="row mb-6">
+                <!--begin::Label-->
+                <label class="col-lg-4 col-form-label fw-semibold fs-6">
+                  <span class="">Last Name</span>
+                </label>
+                <!--end::Label-->
+
+                <!--begin::Col-->
+                <div class="col-lg-8 fv-row">
+                  <Field
+                    type="text"
+                    name="lastName"
+                    class="form-control form-control-lg form-control-solid"
+                    placeholder="Last name"
+                    aria-readonly="readonly"
+                    v-model="record.lastName"
                   />
                 </div>
                 <!--end::Col-->
@@ -100,23 +146,52 @@
               <!--begin::Input group-->
               <div class="row mb-6">
                 <!--begin::Label-->
-                <label class="col-lg-4 col-form-label required fw-semibold fs-6"
-                  >Sport Name</label
-                >
+                <label class="col-lg-4 col-form-label fw-semibold fs-6">
+                  <span class="required">Email</span>
+                </label>
                 <!--end::Label-->
+
                 <!--begin::Col-->
                 <div class="col-lg-8 fv-row">
-                  <input
+                  <Field
                     type="text"
+                    name="email"
                     class="form-control form-control-lg form-control-solid"
-                    :value="record.title"
-                    placeholder="Title"
-                    readonly="true"
-                    name="title"
+                    placeholder="Email"
+                    aria-readonly="readonly"
+                    v-model="record.email"
                   />
                   <div class="fv-plugins-message-container">
                     <div class="fv-help-block">
-                      <ErrorMessage name="title" />
+                      <ErrorMessage name="email" />
+                    </div>
+                  </div>
+                </div>
+                <!--end::Col-->
+              </div>
+              <!--end::Input group-->
+
+              <!--begin::Input group-->
+              <div class="row mb-6">
+                <!--begin::Label-->
+                <label class="col-lg-4 col-form-label fw-semibold fs-6">
+                  <span class="required">Password</span>
+                </label>
+                <!--end::Label-->
+
+                <!--begin::Col-->
+                <div class="col-lg-8 fv-row">
+                  <Field
+                    type="password"
+                    name="password"
+                    class="form-control form-control-lg form-control-solid"
+                    placeholder="Password"
+                    aria-readonly="readonly"
+                    v-model="record.password"
+                  />
+                  <div class="fv-plugins-message-container">
+                    <div class="fv-help-block">
+                      <ErrorMessage name="password" />
                     </div>
                   </div>
                 </div>
@@ -184,7 +259,6 @@
       </div>
       <!--end::Basic info-->
     </div>
-  </div>
 </template>
 
 <script lang="ts">
@@ -193,35 +267,12 @@ import ApiService from "@/core/services/ApiService";
 import { defineComponent, onMounted, ref } from "vue";
 import { useRoute } from "vue-router";
 import { dateTolocaleFormat } from "@/assets/ts/_utils/_TypesHelpers";
-import type { Sport } from "@/core/model/Sport";
+import type { User } from "@/core/model/User";
 import Swal from "sweetalert2/dist/sweetalert2.js";
 import { ErrorMessage, Field, Form as VForm } from "vee-validate";
 import router from "@/router";
+import * as Yup from "yup";
 
-const getData = async (id) => {
-  try {
-    ApiService.setHeader();
-    const response = await ApiService.query(`sports/${id}`, {
-      params: {
-        filter: {
-          include: [
-            {
-              relation: "sportsGroup",
-              required: true, // Ensure only results with a related sportsGroup are included
-              // scope: {
-              //   where: {title : 'Soccer'}
-              // },
-            },
-          ],
-        },
-      },
-    });
-    return response.data;
-  } catch (error) {
-    console.error("Error fetching data:", error);
-    return [];
-  }
-};
 
 const uploadFile = async (params) => {
   try {
@@ -234,19 +285,18 @@ const uploadFile = async (params) => {
     return [];
   }
 };
-const postEditHandle = async (id, params) => {
-  try {
-    ApiService.setHeader();
-    const response = await ApiService.put(`sports/${id}`, params);
-    return { data: response.data, status: true };
-  } catch (error) {
-    console.error("Error fetching data:", error);
-    return { data: {}, status: false };
-  }
+const postHandle = async (dataSave) => {
+  ApiService.setHeader();
+  return ApiService.post("users", dataSave)
+    .then(({ data }) => {
+      return { data: data.data, status: true, message:"success" };
+    })
+    .catch(({ response }) => {
+      return { data: {}, status: false, "message" : response.data.error.message };
+    });
 };
-
 export default defineComponent({
-  name: "sports-edit",
+  name: "users-create",
   components: {
     ErrorMessage,
     Field,
@@ -255,17 +305,21 @@ export default defineComponent({
   setup() {
     const submitButtonEl = ref<HTMLElement | null>(null);
     const route = useRoute(); // Access route to get parameters
-    const recordId = route.params.id; // Get 'id' from the route
-    const record = ref<Sport>({} as Sport);
+    const record = ref<User>({} as User);
     const fileSelected = ref([]);
-    const fetchSportData = async () => {
-      const data = await getData(recordId);
-      record.value = data;
-    };
+    
     const changeFileHandle = (event) => {
       const file = event.target.files;
       fileSelected.value = file;
     };
+
+    const validationForm = Yup.object().shape({
+      firstName: Yup.string().required().label("First Name"),
+      role: Yup.string().required().label("Role"),
+      email: Yup.string().email().required().label("Email"),
+      password: Yup.string().min(4).label("Password"),
+    });
+
 
     const saveSubmitHandle = async () => {
       if (submitButtonEl.value) {
@@ -280,18 +334,20 @@ export default defineComponent({
           }
         }
         var params = {
+          role: record.value.role,
+          password: record.value.password,
           imageUrl: record.value.imageUrl,
           status: record.value.status ? 1 : 0,
-          title: record.value.title,
-          key: record.value.key,
+          firstName: record.value.firstName,
+          lastName: record.value.lastName,
+          email: record.value.email,
         };
-        const postData = await postEditHandle(recordId, params);
-        console.log(postData);
+        const postData = await postHandle(params);
         submitButtonEl.value?.removeAttribute("data-kt-indicator");
         submitButtonEl.value?.removeAttribute("disabled");
         if (postData.status) {
           Swal.fire({
-            text: "You have successfully edit record!",
+            text: "You have successfully create a record!",
             icon: "success",
             buttonsStyling: false,
             confirmButtonText: "OK",
@@ -301,17 +357,19 @@ export default defineComponent({
             },
           }).then(() => {
             // Go to page after successfully login
-            router.push("/sports");
+            router.push("/users");
           });
         } else {
           Swal.fire({
-            text: "Something not right",
+            title: "Something not right",
+            text: postData.message,
             icon: "error",
             buttonsStyling: false,
             confirmButtonText: "Try again!",
             heightAuto: false,
             customClass: {
               confirmButton: "btn fw-semibold btn-light-danger",
+              title:"fw-semibold text-danger fs-3",
             },
           });
         }
@@ -323,17 +381,17 @@ export default defineComponent({
     };
 
     onMounted(() => {
-      fetchSportData(); // Fetch data when component is mounted
     });
 
     return {
+      validationForm,
       changeFileHandle,
       submitButtonEl,
       removeImage,
       saveSubmitHandle,
       dateTolocaleFormat,
-      record,
       getAssetPath,
+      record,
     };
   },
 });

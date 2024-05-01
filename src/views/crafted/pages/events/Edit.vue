@@ -2,7 +2,7 @@
   <div>
     <!-- If club data is null, display a loading message or spinner -->
     <div v-if="record === null">
-      <p>Loading club details...</p>
+      <p>Loading data details...</p>
       <!-- Optionally, add a loading spinner -->
       <div class="spinner"></div>
     </div>
@@ -273,7 +273,7 @@ export default defineComponent({
         submitButtonEl.value.setAttribute("data-kt-indicator", "on");
         submitButtonEl.value.setAttribute("disabled", "disabled");
         // console.log("status : "+ record.value.status)
-        if (fileSelected.value) {
+        if (fileSelected.value.length > 0) {
           const uploadFilePost = await uploadFile(fileSelected.value);
           if (uploadFilePost.files) {
             record.value.imageUrl = uploadFilePost.files[0];

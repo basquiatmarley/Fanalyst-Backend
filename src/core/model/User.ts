@@ -7,6 +7,12 @@ export interface User {
   role: string;
   imageUrl: string;
   api_token: string;
+  status: number;
+  createdAt?: Date;
+  updatedAt?: Date;
+  createdBy?: number;
+  updatedBy?: number;
+  statusDeleted?: number;
 }
 
 export class User {
@@ -18,6 +24,12 @@ export class User {
     public password: string,
     public role: string,
     public imageUrl: string,
-    public api_token: string
+    public api_token: string,
+    public status: number,
+    public statusDeleted?: number,
+    public createdBy?: number,
+    public updatedBy?: number,
+    public createdAt?: Date,
+    public updatedAt?: Date,
   ) {}
 }

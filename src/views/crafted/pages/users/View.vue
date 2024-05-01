@@ -10,11 +10,11 @@
     <!--begin::Navbar-->
     <div v-else class="card mb-5 mb-xxl-8">
       <div class="card-header">
-        <h3 class="card-title">Clubs View</h3>
+        <h3 class="card-title">Users View</h3>
         <div class="card-toolbar">
           <router-link
             class="btn btn-sm btn-success me-3"
-            :to="{ name: 'clubs-list' }"
+            :to="{ name: 'users-list' }"
           >
             <span>Back</span>
           </router-link>
@@ -51,7 +51,7 @@
                 <!--begin::Name-->
                 <div class="d-flex align-items-center mb-2">
                   <span class="text-gray-800 fs-2 fw-bold me-1">{{
-                    record.name
+                    record.firstName
                   }}</span>
                 </div>
                 <!--end::Name-->
@@ -61,8 +61,28 @@
                   <div
                     class="d-flex align-items-center text-gray-800 me-5 mb-2"
                   >
-                    <span class="text-gray-800 me-2">Sport Group :</span>
-                    {{ record.sportsGroup?.title }}
+                    <span class="text-gray-800 me-2">Role :</span>
+                    {{ record.role }}
+                  </div>
+                </div>
+                <!--end::Info-->
+                <!--begin::Info-->
+                <div class="d-flex flex-wrap fw-semibold fs-5 pe-2">
+                  <div
+                    class="d-flex align-items-center text-gray-800 me-5 mb-2"
+                  >
+                    <span class="text-gray-800 me-2">Name :</span>
+                    {{ record.firstName }} {{ record.lastName }}
+                  </div>
+                </div>
+                <!--end::Info-->
+                <!--begin::Info-->
+                <div class="d-flex flex-wrap fw-semibold fs-5 pe-2">
+                  <div
+                    class="d-flex align-items-center text-gray-800 me-5 mb-2"
+                  >
+                    <span class="text-gray-800 me-2">Email :</span>
+                    {{ record.email }} 
                   </div>
                 </div>
                 <!--end::Info-->
@@ -127,24 +147,12 @@ import ApiService from "@/core/services/ApiService";
 import { defineComponent, onMounted, ref } from "vue";
 import { useRoute } from "vue-router";
 import { dateTolocaleFormat } from "@/assets/ts/_utils/_TypesHelpers";
-import type { Club } from "@/core/model/Club";
+import type { User } from "@/core/model/User";
 const getData = async (id) => {
   try {
     ApiService.setHeader();
-    const response = await ApiService.query(`clubs/${id}`, {
-      params: {
-        filter: {
-          include: [
-            {
-              relation: "sportsGroup",
-              required: true, // Ensure only results with a related sportsGroup are included
-              // scope: {
-              //   where: {title : 'Soccer'}
-              // },
-            },
-          ],
-        },
-      },
+    const response = await ApiService.query(`users/${id}`, {
+      
     });
     return response.data;
   } catch (error) {
@@ -154,14 +162,14 @@ const getData = async (id) => {
 };
 
 export default defineComponent({
-  name: "clubs-view",
+  name: "users-view",
   components: {},
   setup() {
     const route = useRoute(); // Access route to get parameters
     const clubId = route.params.id; // Get 'id' from the route
-    const record = ref<Club>({} as Club);
+    const record = ref<User>({} as User);
 
-    const fetchClubData = async () => {
+    const fetchUserData = async () => {
       const data = await getData(clubId);
       data.createdAt = dateTolocaleFormat(data.createdAt);
       data.updatedAt = dateTolocaleFormat(data.updatedAt);
@@ -169,7 +177,7 @@ export default defineComponent({
     };
 
     onMounted(() => {
-      fetchClubData(); // Fetch data when component is mounted
+      fetchUserData(); // Fetch data when component is mounted
     });
 
     return {

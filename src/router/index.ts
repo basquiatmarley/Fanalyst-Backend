@@ -103,7 +103,7 @@ const routes: Array<RouteRecordRaw> = [
         component: () => import("@/views/crafted/pages/sports/View.vue"),
         meta: {
           pageTitle: "Sports View",
-          breadcrumbs: ["Sports Groups", "Sports View"],
+          breadcrumbs: ["Sports", "Sports View"],
         },
       },
       {
@@ -120,8 +120,8 @@ const routes: Array<RouteRecordRaw> = [
         name: "events-list",
         component: () => import("@/views/crafted/pages/events/List.vue"),
         meta: {
-          pageTitle: "Sports List",
-          breadcrumbs: ["Sports List"],
+          pageTitle: "Events List",
+          breadcrumbs: ["Events List"],
         },
       },
       {
@@ -129,8 +129,8 @@ const routes: Array<RouteRecordRaw> = [
         name: "events-view",
         component: () => import("@/views/crafted/pages/events/View.vue"),
         meta: {
-          pageTitle: "Sports View",
-          breadcrumbs: ["Sports Groups", "Sports View"],
+          pageTitle: "Event View",
+          breadcrumbs: ["Events List", "Event View"],
         },
       },
       {
@@ -138,8 +138,44 @@ const routes: Array<RouteRecordRaw> = [
         name: "events-edit",
         component: () => import("@/views/crafted/pages/events/Edit.vue"),
         meta: {
-          pageTitle: "Sports Edit",
-          breadcrumbs: ["Sports", "Sports Edit"],
+          pageTitle: "Event Edit",
+          breadcrumbs: ["Events List", "Event Edit"],
+        },
+      },
+      {
+        path: "/users",
+        name: "users-list",
+        component: () => import("@/views/crafted/pages/users/List.vue"),
+        meta: {
+          pageTitle: "Users List",
+          breadcrumbs: ["Users List"],
+        },
+      },
+      {
+        path: "/users/:id",
+        name: "users-view",
+        component: () => import("@/views/crafted/pages/users/View.vue"),
+        meta: {
+          pageTitle: "Users View",
+          breadcrumbs: ["Users List", "Users View"],
+        },
+      },
+      {
+        path: "/users/edit/:id",
+        name: "users-edit",
+        component: () => import("@/views/crafted/pages/users/Edit.vue"),
+        meta: {
+          pageTitle: "Users Edit",
+          breadcrumbs: ["Users", "Users Edit"],
+        },
+      },
+      {
+        path: "/users/create",
+        name: "users-create",
+        component: () => import("@/views/crafted/pages/users/Create.vue"),
+        meta: {
+          pageTitle: "Users Edit",
+          breadcrumbs: ["Users", "Users Edit"],
         },
       },
     ],

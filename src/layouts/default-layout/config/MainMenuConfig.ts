@@ -47,6 +47,18 @@ const MainMenuConfig: Array<MenuItem> = [
       },
     ],
   },
+  {
+    heading: "ACCESIBILITY",
+    route: "/accessibility",
+    pages: [
+      {
+        heading: "users",
+        route: "/users",
+        keenthemesIcon: "user",
+        bootstrapIcon: "bi-user",
+      },
+    ],
+  },
 ];
 
 export default MainMenuConfig;

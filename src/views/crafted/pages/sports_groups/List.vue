@@ -47,7 +47,7 @@
         <template v-slot:imageUrl="{ row: data }">
           <img
             :src="
-              data.imageUrl != ''
+              data.imageUrl != '' && data.imageUrl != null
                 ? getApiUrl('.sandbox/' + data.imageUrl)
                 : 'https://placehold.jp/150x150.png'
             "

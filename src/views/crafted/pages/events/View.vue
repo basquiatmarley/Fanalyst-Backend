@@ -2,7 +2,7 @@
   <div>
     <!-- If club data is null, display a loading message or spinner -->
     <div v-if="record === null">
-      <p>Loading club details...</p>
+      <p>Loading data details...</p>
       <!-- Optionally, add a loading spinner -->
       <div class="spinner"></div>
     </div>

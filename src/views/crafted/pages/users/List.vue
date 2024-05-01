@@ -2,11 +2,14 @@
   <!--begin::Timeline-->
   <div class="card">
     <div class="card-header">
-      <h3 class="card-title">Sports List</h3>
+      <h3 class="card-title">Users List</h3>
       <div class="card-toolbar">
-        <!-- <button type="button" class="btn btn-sm btn-light">
-                  Add New
-              </button> -->
+        <router-link
+              class="btn btn-sm btn-success me-3"
+              :to="{ name: 'users-create' }"
+            >
+              <span>Create New</span>
+            </router-link>
       </div>
     </div>
     <div class="card-body">
@@ -14,7 +17,7 @@
         v-model="searchQuery"
         type="text"
         class="form-control mb-4"
-        placeholder="Search by sport name"
+        placeholder="Search"
       />
       <Datatable
         :loading="loading"
@@ -23,23 +26,29 @@
         @on-sort="handleSort"
       >
         <template v-slot:action="{ row: data }">
-          <!-- <a href="#" class="btn btn-icon btn-sm me-2 btn-light">
+          <a href="#" class="btn btn-icon btn-sm me-2 btn-light" v-on:click="handleDelete(data.id)">
               <i class="ki-duotone ki-trash-square text-danger fs-2x">
                 <span class="path1"></span>
                 <span class="path2"></span>
                 <span class="path3"></span>
                 <span class="path4"></span>
               </i>
-            </a> -->
+            </a>
+            <!-- <router-link
+            class="btn btn-icon btn-sm me-2 btn-light"
+            :to="{ name: 'users-edit', params: { id: data.id } }"
+          >
+            <KTIcon icon-name="trash" icon-class=" text-danger fs-2" />
+          </router-link> -->
           <router-link
             class="btn btn-icon btn-sm me-2 btn-light"
-            :to="{ name: 'sports-edit', params: { id: data.id } }"
+            :to="{ name: 'users-edit', params: { id: data.id } }"
           >
             <KTIcon icon-name="pencil" icon-class=" text-success fs-2" />
           </router-link>
           <router-link
             class="btn btn-icon btn-sm me-2 btn-light"
-            :to="{ name: 'sports-view', params: { id: data.id } }"
+            :to="{ name: 'users-view', params: { id: data.id } }"
           >
             <KTIcon icon-name="eye" icon-class=" text-info fs-2" />
           </router-link>
@@ -55,15 +64,18 @@
             alt="image"
           />
         </template>
-        <template v-slot:sportsGroup_title="{ row: data }">
-          {{ data.sportsGroup.title }}
+        <template v-slot:role="{ row: data }">
+          {{ data.role }}
         </template>
-        <template v-slot:title="{ row: data }">
-          {{ data.title }}
+        <template v-slot:name="{ row: data }">
+          {{ `${data.firstName} ${data.lastName}` }}
+        </template>
+        <template v-slot:email="{ row: data }">
+          {{ data.email }}
         </template>
         <template v-slot:status="{ row: data }">
           <div class="text-center">
-            <span v-if="data.status == 1" :class="`badge badge-light-success`">
+            <span v-if="data.status === 1" :class="`badge badge-light-success`">
               Active
             </span>
             <span v-else :class="`badge badge-light-danger`"> Inactive </span>
@@ -80,11 +92,12 @@ import { getApiUrl } from "@/core/helpers/assets";
 import { defineComponent, ref, onMounted, watch } from "vue";
 import Datatable from "@/components/kt-datatable/KTDataTable.vue";
 import ApiService from "@/core/services/ApiService";
+import Swal from "sweetalert2/dist/sweetalert2.js";
 // Function to fetch data from the API
 const getData = async (params) => {
   try {
     ApiService.setHeader();
-    const response = await ApiService.query("sports", {
+    const response = await ApiService.query("users", {
       params: { filter: params },
     });
     return response.data;
@@ -93,9 +106,19 @@ const getData = async (params) => {
     return [];
   }
 };
+const deleteData = async (id) => {
+  try {
+    ApiService.setHeader();
+    const response = await ApiService.delete(`users/${id}`);
+    return true;
+  } catch (error) {
+    console.error("Error fetching data:", error);
+    return false;
+  }
+};
 
 export default defineComponent({
-  name: "sports-list",
+  name: "users-list",
   components: {
     Datatable,
   },
@@ -115,15 +138,21 @@ export default defineComponent({
         sortEnabled: true,
       },
       {
-        columnName: "Sport Group",
-        columnLabel: "sportsGroup_title",
-        columnWidth: 200,
+        columnName: "role",
+        columnLabel: "role",
+        columnWidth: 100,
         sortEnabled: true,
       },
       {
-        columnName: "Title",
-        columnLabel: "title",
-        columnWidth: 300,
+        columnName: "Name",
+        columnLabel: "name",
+        columnWidth: 150,
+        sortEnabled: true,
+      },
+      {
+        columnName: "Email",
+        columnLabel: "email",
+        columnWidth: 150,
         sortEnabled: true,
       },
       {
@@ -137,12 +166,6 @@ export default defineComponent({
     const params = ref<any>({
       where: {},
       order: {},
-      include: [
-        {
-          relation: "sportsGroup",
-          required: true,
-        },
-      ],
     });
 
     const fetchData = async () => {
@@ -153,29 +176,63 @@ export default defineComponent({
 
     const handleSort = async (s) => {
       let label = s.label;
+      if(label == 'name'){
+        label = 'firstName';
+      }
       if (label) {
         label = label.replace(/_/g, " ");
         params.value.order = [`${label} ${s.order}`];
         await fetchData(); // Fetch data with new sort order
       }
     };
-
+    const handleDelete = async(id) =>{
+      Swal.fire({
+          text: "Are you sure delete this record?",
+          icon: "info",
+          buttonsStyling: false,
+          confirmButtonText: "Confirm",
+          showCancelButton: true,
+          heightAuto: false,
+          customClass: {
+            confirmButton: "btn fw-semibold btn-light-primary",
+            cancelButton: "btn fw-semibold btn-light-danger",
+          },
+        }).then(async () => {
+           var response = await deleteData(id);
+           if(response){
+            fetchData();
+            Swal.fire({
+              text: "You have successfully delete record!",
+              icon: "success",
+              buttonsStyling: false,
+              confirmButtonText: "OK",
+              heightAuto: false,
+              customClass: {
+                confirmButton: "btn fw-semibold btn-light-primary",
+              },
+            })
+           }else{
+            Swal.fire({
+              text: "Failed delete record!",
+              icon: "danger",
+              buttonsStyling: false,
+              confirmButtonText: "OK",
+              heightAuto: false,
+              customClass: {
+                confirmButton: "btn fw-semibold btn-light-primary",
+              },
+            })
+           }
+        });
+    }
     const filteredData = async () => {
       params.value.where = {
         or: [
-          { name: { like: `%${searchQuery.value}%` } },
+          { firstName: { like: `%${searchQuery.value}%` } },
+          { email: { like: `%${searchQuery.value}%` } },
           // {"`SportsGroup`.`title`": { like: `%${searchQuery.value}%` }}
         ],
       };
-      params.value.include = [
-        {
-          relation: "sportsGroup",
-          required: true, // Ensure only results with a related sportsGroup are included
-          // scope: {
-          //   where: {title : 'Soccer'}
-          // },
-        },
-      ];
       await fetchData(); // Fetch data with updated filter
     };
 
@@ -186,6 +243,7 @@ export default defineComponent({
     });
 
     return {
+      handleDelete,
       getApiUrl,
       loading,
       tableHeader,

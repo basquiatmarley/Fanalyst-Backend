@@ -17,7 +17,7 @@
 
         <!--begin::Link-->
         <div class="text-warning fw-semibold fs-4">
-          Pellentesque eu metus metus. Suspendisse arcu nunc, ullamcorper a varius in, luctus vel lorem.
+          Fanalyst content management system.
 
           <!-- <router-link to="/sign-up" class="link-primary fw-bold">
             Create an Account

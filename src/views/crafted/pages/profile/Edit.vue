@@ -1,17 +1,26 @@
 <template>
   <div>
+    <!-- If club data is null, display a loading message or spinner -->
+    <div v-if="record === null">
+      <p>Loading data details...</p>
+      <!-- Optionally, add a loading spinner -->
+      <div class="spinner"></div>
+    </div>
+
+    <!--begin::FORM-->
+    <div v-else class="">
       <!--begin::Basic info-->
       <div class="card mb-5 mb-xl-10">
         <!--begin::Card header-->
         <div class="card-header border-0 cursor-pointer">
           <!--begin::Card title-->
           <div class="card-title m-0">
-            <h3 class="fw-bold m-0">Create User</h3>
+            <h3 class="fw-bold m-0">Account Settings</h3>
           </div>
           <div class="card-toolbar">
             <router-link
               class="btn btn-sm btn-success me-3"
-              :to="{ name: 'users-list' }"
+              :to="{ name: 'dashboard' }"
             >
               <span>Back</span>
             </router-link>
@@ -60,40 +69,7 @@
                 </div>
                 <!--end::Col-->
               </div>
-              <!--end::Input group-->
-               <!--begin::Input group-->
-               <div class="row mb-6">
-                <!--begin::Label-->
-                <label class="col-lg-4 col-form-label fw-semibold fs-6">
-                  <span class="required">Role</span>
-                </label>
-                <!--end::Label-->
-
-                <!--begin::Col-->
-                <div class="col-lg-8 fv-row">
-                  <Field
-                    as="select"
-                    name="role"
-                    class="form-control form-control-lg form-control-solid"
-                    placeholder="Role"
-                    aria-readonly="readonly"
-                    v-model="record.role"
-                    
-                  >
-                      <option value="" disabled>Select a role</option>
-                      <option value="super-admin">Super Admin</option>
-                      <option value="member">Member</option>
-                  </Field>
-
-                  <div class="fv-plugins-message-container">
-                    <div class="fv-help-block">
-                      <ErrorMessage name="role" />
-                    </div>
-                  </div>
-                </div>
-                <!--end::Col-->
-              </div>
-              <!--end::Input group-->
+              
               <!--begin::Input group-->
               <div class="row mb-6">
                 <!--begin::Label-->
@@ -175,7 +151,7 @@
               <div class="row mb-6">
                 <!--begin::Label-->
                 <label class="col-lg-4 col-form-label fw-semibold fs-6">
-                  <span class="required">Password</span>
+                  <span class="">Password</span>
                 </label>
                 <!--end::Label-->
 
@@ -259,6 +235,7 @@
       </div>
       <!--end::Basic info-->
     </div>
+  </div>
 </template>
 
 <script lang="ts">
@@ -272,7 +249,17 @@ import Swal from "sweetalert2/dist/sweetalert2.js";
 import { ErrorMessage, Field, Form as VForm } from "vee-validate";
 import router from "@/router";
 import * as Yup from "yup";
+import { useAuthStore } from "@/stores/auth";
+import JwtService from "@/core/services/JwtService";
 
+interface UserParams {
+      imageUrl: string;
+      status: number;
+      firstName: string;
+      lastName: string;
+      email: string;
+      password?: string; // Optional property
+    }
 
 const uploadFile = async (params) => {
   try {
@@ -285,41 +272,42 @@ const uploadFile = async (params) => {
     return [];
   }
 };
-const postHandle = async (dataSave) => {
+const postEditHandle = async ( params) => {
   ApiService.setHeader();
-  return ApiService.post("users", dataSave)
-    .then(({ data }) => {
-      return { data: data, status: true, message:"success" };
-    })
-    .catch(({ response }) => {
-      return { data: {}, status: false, "message" : response.data.error.message };
-    });
+  return ApiService.post(`auth/edit-profile`, params)
+  .then(({ data }) => {
+    data.api_token = JwtService.getToken();
+    return { "data": data, status: true, message:"success" };
+  })
+  .catch(({ response }) => {
+    return { data: {}, status: false, "message" : response.data.error.message };
+  });
 };
 export default defineComponent({
-  name: "users-create",
+  name: "profile-edit",
   components: {
     ErrorMessage,
     Field,
     VForm,
   },
   setup() {
+    const store = useAuthStore();
     const submitButtonEl = ref<HTMLElement | null>(null);
-    const route = useRoute(); // Access route to get parameters
     const record = ref<User>({} as User);
     const fileSelected = ref([]);
-    
+    const fetchUserData = async () => {
+      record.value = store.user;
+      record.value.password = '';
+    };
     const changeFileHandle = (event) => {
       const file = event.target.files;
       fileSelected.value = file;
     };
-
     const validationForm = Yup.object().shape({
       firstName: Yup.string().required().label("First Name"),
-      role: Yup.string().required().label("Role"),
       email: Yup.string().email().required().label("Email"),
-      password: Yup.string().min(4).label("Password"),
+      // password: Yup.string().min().label("Password"),
     });
-
 
     const saveSubmitHandle = async () => {
       if (submitButtonEl.value) {
@@ -333,21 +321,25 @@ export default defineComponent({
             record.value.imageUrl = uploadFilePost.files[0];
           }
         }
-        var params = {
-          role: record.value.role,
-          password: record.value.password,
+        var params: UserParams  = {
           imageUrl: record.value.imageUrl,
           status: record.value.status ? 1 : 0,
           firstName: record.value.firstName,
           lastName: record.value.lastName,
           email: record.value.email,
         };
-        const postData = await postHandle(params);
+        
+        if (record.value.password && record.value.password.trim() !== '') {
+          params.password = record.value.password.trim();
+        }
+        const postData = await postEditHandle(params);
         submitButtonEl.value?.removeAttribute("data-kt-indicator");
         submitButtonEl.value?.removeAttribute("disabled");
         if (postData.status) {
+          // console.log(postData.data);
+          store.setAuth(postData.data);
           Swal.fire({
-            text: "You have successfully create a record!",
+            text: "You have successfully edit record!",
             icon: "success",
             buttonsStyling: false,
             confirmButtonText: "OK",
@@ -356,8 +348,7 @@ export default defineComponent({
               confirmButton: "btn fw-semibold btn-light-primary",
             },
           }).then(() => {
-            // Go to page after successfully login
-            router.push("/users");
+            // router.push("/users");
           });
         } else {
           Swal.fire({
@@ -381,6 +372,7 @@ export default defineComponent({
     };
 
     onMounted(() => {
+      fetchUserData(); // Fetch data when component is mounted
     });
 
     return {
@@ -390,8 +382,8 @@ export default defineComponent({
       removeImage,
       saveSubmitHandle,
       dateTolocaleFormat,
-      getAssetPath,
       record,
+      getAssetPath,
     };
   },
 });

@@ -318,7 +318,7 @@ const postEditHandle = async (id, params) => {
   ApiService.setHeader();
   return ApiService.put(`users/${id}`, params)
   .then(({ data }) => {
-    return { data: data.data, status: true, message:"success" };
+    return { data: data, status: true, message:"success" };
   })
   .catch(({ response }) => {
     return { data: {}, status: false, "message" : response.data.error.message };

@@ -52,7 +52,7 @@ const MainMenuConfig: Array<MenuItem> = [
     route: "/accessibility",
     pages: [
       {
-        heading: "users",
+        heading: "Users",
         route: "/users",
         keenthemesIcon: "user",
         bootstrapIcon: "bi-user",

@@ -16,6 +16,15 @@ const routes: Array<RouteRecordRaw> = [
     },
     children: [
       {
+        path: "/account-settings",
+        name: "profile-edit",
+        component: () => import("@/views/crafted/pages/profile/Edit.vue"),
+        meta: {
+          pageTitle: "Account Settings",
+          breadcrumbs: ["Account Settings"],
+        },
+      },
+      {
         path: "/dashboard",
         name: "dashboard",
         component: () => import("@/views/Dashboard.vue"),

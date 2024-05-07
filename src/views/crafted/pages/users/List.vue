@@ -56,9 +56,7 @@
         <template v-slot:imageUrl="{ row: data }">
           <img
             :src="
-              data.imageUrl != '' && data.imageUrl != null
-                ? getApiUrl('.sandbox/' + data.imageUrl)
-                : 'https://placehold.jp/150x100.png'
+              getUploadAssetPath(data.imageUrl)
             "
             :class="`w-100px`"
             alt="image"
@@ -88,7 +86,7 @@
 </template>
 
 <script lang="ts">
-import { getApiUrl } from "@/core/helpers/assets";
+import { getUploadAssetPath } from "@/core/helpers/assets";
 import { defineComponent, ref, onMounted, watch } from "vue";
 import Datatable from "@/components/kt-datatable/KTDataTable.vue";
 import ApiService from "@/core/services/ApiService";
@@ -226,13 +224,19 @@ export default defineComponent({
         });
     }
     const filteredData = async () => {
-      params.value.where = {
-        or: [
+      let whereCondition = {};
+      if(searchQuery.value != ""){
+        whereCondition = {
+          or: [
           { firstName: { like: `%${searchQuery.value}%` } },
+          { lastName: { like: `%${searchQuery.value}%` } },
           { email: { like: `%${searchQuery.value}%` } },
-          // {"`SportsGroup`.`title`": { like: `%${searchQuery.value}%` }}
-        ],
-      };
+          ],
+        };
+      }else{
+        whereCondition = {};
+      }
+      params.value.where = whereCondition;
       await fetchData(); // Fetch data with updated filter
     };
 
@@ -244,7 +248,7 @@ export default defineComponent({
 
     return {
       handleDelete,
-      getApiUrl,
+      getUploadAssetPath,
       loading,
       tableHeader,
       tableData,

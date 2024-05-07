@@ -4,18 +4,15 @@
     <div class="card-header">
       <h3 class="card-title">Event List</h3>
       <div class="card-toolbar">
-        <!-- <button type="button" class="btn btn-sm btn-light">
-                  Add New
-              </button> -->
       </div>
     </div>
     <div class="card-body">
-      <!-- <input 
+      <input 
         v-model="searchQuery" 
         type="text" 
         class="form-control mb-4" 
-        placeholder="Search by sport name" 
-      /> -->
+        placeholder="Search..." 
+      />
       <Datatable
         :loading="loading"
         :header="tableHeader"
@@ -23,20 +20,6 @@
         @on-sort="handleSort"
       >
         <template v-slot:action="{ row: data }">
-          <!-- <a href="#" class="btn btn-icon btn-sm me-2 btn-light">
-              <i class="ki-duotone ki-trash-square text-danger fs-2x">
-                <span class="path1"></span>
-                <span class="path2"></span>
-                <span class="path3"></span>
-                <span class="path4"></span>
-              </i>
-            </a> -->
-          <!-- <router-link
-                    class="btn btn-icon btn-sm me-2 btn-light"
-                    :to="{ name: 'events-edit', params: { id: data.id } }"
-                  >
-              <KTIcon icon-name="pencil" icon-class=" text-success fs-2" />
-            </router-link> -->
           <router-link
             class="btn btn-icon btn-sm me-2 btn-light"
             :to="{ name: 'events-view', params: { id: data.id } }"
@@ -44,36 +27,14 @@
             <KTIcon icon-name="eye" icon-class=" text-info fs-2" />
           </router-link>
         </template>
-        <template v-slot:imageUrl="{ row: data }">
-          <img
-            :src="
-              data.imageUrl != '' && data.imageUrl != null
-                ? getApiUrl('.sandbox/' + data.imageUrl)
-                : 'https://placehold.jp/150x100.png'
-            "
-            :class="`w-100px`"
-            alt="image"
-          />
-        </template>
         <template v-slot:commenceTime="{ row: data }">
-          {{ dateTolocaleFormat(data.commenceTime) }}
+          {{ getLocaleFormatted(data.commenceTime) }}
         </template>
         <template v-slot:event="{ row: data }">
           {{ data.homeClub.name }} VS {{ data.awayClub.name }}
         </template>
-        <template v-slot:completed="{ row: data }">
-          <div class="text-center">
-            <span
-              v-if="data.completed === 1"
-              :class="`badge badge-light-success`"
-            >
-              COMPLETED
-            </span>
-            <span v-else :class="`badge badge-light-danger`"> PENDING </span>
-          </div>
-        </template>
         <template v-slot:winner="{ row: data }">
-          <div class="text-center">
+          <div class="">
             <span v-if="data.winner === 2" :class="`badge badge-light-success`">
               AWAY
             </span>
@@ -99,10 +60,9 @@
 </template>
 
 <script lang="ts">
-import { getApiUrl } from "@/core/helpers/assets";
 import { defineComponent, ref, onMounted, watch } from "vue";
 import Datatable from "@/components/kt-datatable/KTDataTable.vue";
-import { dateTolocaleFormat } from "@/assets/ts/_utils/_TypesHelpers";
+import  {getLocaleFormatted}  from "@/core/helpers/date_utils";
 import ApiService from "@/core/services/ApiService";
 // Function to fetch data from the API
 const getData = async (params) => {
@@ -142,12 +102,6 @@ export default defineComponent({
         columnName: "Event",
         columnLabel: "event",
         columnWidth: 300,
-        // sortEnabled: true,
-      },
-      {
-        columnName: "Completed",
-        columnLabel: "completed",
-        columnWidth: 100,
         // sortEnabled: true,
       },
       {
@@ -197,38 +151,36 @@ export default defineComponent({
     };
 
     const filteredData = async () => {
-      params.value.where = {
-        or: [
-          { name: { like: `%${searchQuery.value}%` } },
-          // {"`SportsGroup`.`title`": { like: `%${searchQuery.value}%` }}
-        ],
-      };
-      params.value.include = [
-        {
-          relation: "eventsGroup",
-          required: true, // Ensure only results with a related eventsGroup are included
-          // scope: {
-          //   where: {title : 'Soccer'}
-          // },
-        },
-      ];
-      await fetchData(); // Fetch data with updated filter
+      let whereCondition = {};
+      if(searchQuery.value != ""){
+        whereCondition = {
+          or: [
+          { "$sportsGroup.title$": { like: `%${searchQuery.value}%` } },
+          { "$sport.title$": { like: `%${searchQuery.value}%` } },
+          { "$homeClub.name$": { like: `%${searchQuery.value}%` } },
+          { "$awayClub.name$": { like: `%${searchQuery.value}%` } },
+          ],
+        };
+      }else{
+        whereCondition = {};
+      }
+      params.value.where = whereCondition;
+      await fetchData(); 
     };
 
     watch(() => searchQuery.value, filteredData);
 
     onMounted(() => {
-      fetchData(); // Calls `fetchData` with the default `params`
+      fetchData(); 
     });
 
     return {
-      getApiUrl,
       loading,
       tableHeader,
       tableData,
       searchQuery,
       handleSort,
-      dateTolocaleFormat,
+      getLocaleFormatted,
     };
   },
 });

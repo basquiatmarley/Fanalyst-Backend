@@ -1,7 +1,7 @@
 <template>
   <div>
     <!-- If club data is null, display a loading message or spinner -->
-    <div v-if="record === null">
+    <div v-if="record.id === undefined">
       <p>Loading data details...</p>
       <!-- Optionally, add a loading spinner -->
       <div class="spinner"></div>
@@ -10,11 +10,11 @@
     <!--begin::Navbar-->
     <div v-else class="card mb-5 mb-xxl-8">
       <div class="card-header">
-        <h3 class="card-title">Sports View</h3>
+        <h3 class="card-title">Event View</h3>
         <div class="card-toolbar">
           <router-link
             class="btn btn-sm btn-success me-3"
-            :to="{ name: 'sports-list' }"
+            :to="{ name: 'events-list' }"
           >
             <span>Back</span>
           </router-link>
@@ -30,9 +30,7 @@
             >
               <img
                 :src="
-                  record.imageUrl != ''
-                    ? getApiUrl('.sandbox/' + record.imageUrl)
-                    : 'https://placehold.jp/150x100.png'
+                  getUploadAssetPath(record.sport?.imageUrl)
                 "
                 alt="image"
               />
@@ -48,70 +46,123 @@
             >
               <!--begin::User-->
               <div class="d-flex flex-column">
+                <div>
+                  <span v-if="record.winner === 2" :class="`badge badge-light-success`">
+                    AWAY
+                  </span>
+                  <span
+                    v-else-if="record.winner === 1"
+                    :class="`badge badge-light-info`"
+                  >
+                    HOME
+                  </span>
+                  <span
+                    v-else-if="record.winner === 3"
+                    :class="`badge badge-light-warning`"
+                  >
+                    TIE
+                  </span>
+                  <span v-else :class="`badge badge-light-danger`"> UPCOMING </span>
+                </div>
                 <!--begin::Name-->
                 <div class="d-flex align-items-center mb-2">
                   <span class="text-gray-800 fs-2 fw-bold me-1">{{
-                    record.title
+                    record.homeClub?.name
+                  }} VS {{
+                    record.awayClub?.name
                   }}</span>
+                  
                 </div>
+                
                 <!--end::Name-->
-
-                <!--begin::Info-->
-                <div class="d-flex flex-wrap fw-semibold fs-5 pe-2">
-                  <div
-                    class="d-flex align-items-center text-gray-800 me-5 mb-2"
-                  >
-                    <span class="text-gray-800 me-2">Sport Group :</span>
-                    {{ record.sportsGroup?.title }}
-                  </div>
-                </div>
-                <!--end::Info-->
-                <!--begin::Info-->
-                <div class="d-flex flex-wrap fw-semibold fs-5 pe-2">
-                  <div
-                    class="d-flex align-items-center text-gray-800 me-5 mb-2"
-                  >
-                    <span class="text-gray-800 me-2">Status :</span>
-                    <span
-                      v-if="record.status == 1"
-                      :class="`badge badge-light-success`"
-                    >
-                      Active
-                    </span>
-                    <span v-else :class="`badge badge-light-danger`">
-                      Inactive
-                    </span>
-                  </div>
-                </div>
-                <!--end::Info-->
-                <!--begin::Info-->
-                <div class="d-flex flex-wrap fw-semibold fs-5 pe-2">
-                  <div
-                    class="d-flex align-items-center text-gray-800 me-5 mb-2"
-                  >
-                    <span class="text-gray-800 me-2">Created At :</span>
-                    <span :class="``">
-                      {{ record.createdAt }}
-                    </span>
-                  </div>
-                </div>
-                <!--end::Info-->
-                <!--begin::Info-->
-                <div class="d-flex flex-wrap fw-semibold fs-5 pe-2">
-                  <div
-                    class="d-flex align-items-center text-gray-800 me-5 mb-2"
-                  >
-                    <span class="text-gray-800 me-2">Update At :</span>
-                    <span :class="``">
-                      {{ record.updatedAt }}
-                    </span>
-                  </div>
+                <div class="d-flex flex-wrap fw-semibold fs-6 pe-2">
+                  <a href="#" class="d-flex align-items-center text-gray-500 text-hover-primary me-5 mb-2">
+                    <i class="ki-duotone ki-rocket fs-4 me-1">
+                      <span class="path1"></span><span class="path2"></span><span class="path3"></span></i> 
+                      {{ record.sportsGroup?.title }} 
+                    </a>
+                  <a href="#" class="d-flex align-items-center text-gray-500 text-hover-primary me-5 mb-2">
+                    <i class="ki-duotone ki-time fs-4 me-1">
+                      <span class="path1"></span>
+                      <span class="path2"></span>
+                    </i>
+                    {{ getLocaleFormatted(record.commenceTime,'full')}} 
+                    </a>
+                  <a href="#" class="d-flex align-items-center text-gray-500 text-hover-primary me-5 mb-2">
+                    <i class="ki-duotone ki-star fs-4 me-1">
+                      <span class="path1"></span>
+                      <span class="path2"></span>
+                    </i>
+                    {{ record.sport?.title}}  
+                    </a>
                 </div>
                 <!--end::Info-->
               </div>
               <!--end::User-->
             </div>
             <!--end::Title-->
+            <div class="d-flex flex-wrap flex-stack">
+              <div
+                class="d-flex flex-wrap flex-stack">
+                <div
+                    class="d-flex flex-column flex-grow-1 pe-8">
+                    <div class="d-flex flex-wrap">
+                        <div
+                            class="border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6 mb-3">
+                            <div
+                                class="text-center">
+                                <div
+                                    class="fs-1 fw-bold">
+                                    {{ record.scores![0] != undefined ? record.scores![0].homeScore : '0' }}
+                                </div>
+                                <div
+                                class="fw-semibold fs-6 text-gray-500">
+                                HOME</div>
+                            </div>
+                        </div>
+                        <div
+                            class="border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6 mb-3">
+                            <div
+                                class="text-center">
+                                <div
+                                    class="fs-1 fw-bold">
+                                    {{ record.scores![0] != undefined ? record.scores![0].awayScore : '0' }}
+                                </div>
+                                <div
+                                class="fw-semibold fs-6 text-gray-500">
+                                AWAY</div>
+                            </div>
+                        </div>
+                        <div
+                            class="border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6 mb-3">
+                            <div
+                                class="text-center">
+                                <div
+                                    class="fs-1 fw-bold">
+                                    {{ homePredictionsCount }}
+                                </div>
+                                <div
+                                class="fw-semibold fs-6 text-gray-500">
+                                HOME PICK</div>
+                            </div>
+                        </div>
+                        <div
+                            class="border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6 mb-3">
+                            <div
+                                class="text-center">
+                                <div
+                                    class="fs-1 fw-bold">
+                                    {{ awayPredictionsCount }}
+                                </div>
+                                <div
+                                class="fw-semibold fs-6 text-gray-500">
+                                AWAY PICK</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>  
+              </div>
+            </div>
           </div>
           <!--end::Info-->
         </div>
@@ -122,25 +173,40 @@
 </template>
 
 <script lang="ts">
-import { getApiUrl } from "@/core/helpers/assets";
+import { getUploadAssetPath } from "@/core/helpers/assets";
 import ApiService from "@/core/services/ApiService";
 import { defineComponent, onMounted, ref } from "vue";
 import { useRoute } from "vue-router";
-import { dateTolocaleFormat } from "@/assets/ts/_utils/_TypesHelpers";
-import type { Sport } from "@/core/model/Sport";
+import  {getLocaleFormatted}  from "@/core/helpers/date_utils";
+import type { Event } from "@/core/model/Event";
 const getData = async (id) => {
   try {
     ApiService.setHeader();
-    const response = await ApiService.query(`sports/${id}`, {
+    const response = await ApiService.query(`events/${id}`, {
       params: {
         filter: {
           include: [
             {
               relation: "sportsGroup",
-              required: true, // Ensure only results with a related sportsGroup are included
-              // scope: {
-              //   where: {title : 'Soccer'}
-              // },
+              required: true,
+            },
+            {
+              relation: "sport",
+              required: true,
+            },
+            {
+              relation: "homeClub",
+              required: true,
+            },
+            {
+              relation: "awayClub",
+              required: true,
+            },
+            {
+              relation: "scores",
+            },
+            {
+              relation: "usersPredictions",
             },
           ],
         },
@@ -159,22 +225,40 @@ export default defineComponent({
   setup() {
     const route = useRoute(); // Access route to get parameters
     const clubId = route.params.id; // Get 'id' from the route
-    const record = ref<Sport>({} as Sport);
-
-    const fetchSportData = async () => {
+    const record = ref<Event>({} as Event);
+    const usersPredictionsCount = ref(0);
+    const homePredictionsCount = ref(0);
+    const awayPredictionsCount = ref(0);
+    const fetchData = async () => {
       const data = await getData(clubId);
-      data.createdAt = dateTolocaleFormat(data.createdAt);
-      data.updatedAt = dateTolocaleFormat(data.updatedAt);
       record.value = data;
+      if(data.usersPredictions != null){
+        usersPredictionsCount.value = data.usersPredictions.length;
+        
+        const teamCounts = data.usersPredictions.reduce((acc, prediction) => {
+        const team = prediction.predictedTeam;
+        if (acc[team]) {
+          acc[team] += 1; // Increment the count
+        } else {
+          acc[team] = 1; // Initialize the count
+        }
+        return acc;
+      }, {});
+        homePredictionsCount.value = (teamCounts[1] != undefined ? teamCounts[1] : 0);
+        awayPredictionsCount.value = (teamCounts[2] != undefined ? teamCounts[2] : 0);
+      }
     };
 
     onMounted(() => {
-      fetchSportData(); // Fetch data when component is mounted
+      fetchData(); // Fetch data when component is mounted
     });
 
     return {
-      getApiUrl,
-      dateTolocaleFormat,
+      awayPredictionsCount,
+      homePredictionsCount,
+      usersPredictionsCount,
+      getUploadAssetPath,
+      getLocaleFormatted,
       record,
     };
   },

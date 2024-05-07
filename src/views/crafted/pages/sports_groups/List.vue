@@ -23,14 +23,6 @@
         @on-sort="handleSort"
       >
         <template v-slot:action="{ row: data }">
-          <!-- <a href="#" class="btn btn-icon btn-sm me-2 btn-light">
-              <i class="ki-duotone ki-trash-square text-danger fs-2x">
-                <span class="path1"></span>
-                <span class="path2"></span>
-                <span class="path3"></span>
-                <span class="path4"></span>
-              </i>
-            </a> -->
           <router-link
             class="btn btn-icon btn-sm me-2 btn-light"
             :to="{ name: 'sports-groups-edit', params: { id: data.id } }"
@@ -47,9 +39,16 @@
         <template v-slot:imageUrl="{ row: data }">
           <img
             :src="
-              data.imageUrl != '' && data.imageUrl != null
-                ? getApiUrl('.sandbox/' + data.imageUrl)
-                : 'https://placehold.jp/150x150.png'
+            getUploadAssetPath(data.imageUrl)
+            "
+            :class="`w-100px`"
+            alt="image"
+          />
+        </template>
+        <template v-slot:backgroundUrl="{ row: data }">
+          <img
+            :src="
+            getUploadAssetPath(data.backgroundUrl)
             "
             :class="`w-100px`"
             alt="image"
@@ -73,7 +72,7 @@
 </template>
 
 <script lang="ts">
-import { getApiUrl } from "@/core/helpers/assets";
+import { getUploadAssetPath } from "@/core/helpers/assets";
 import { defineComponent, ref, onMounted, watch } from "vue";
 import Datatable from "@/components/kt-datatable/KTDataTable.vue";
 import ApiService from "@/core/services/ApiService";
@@ -112,6 +111,12 @@ export default defineComponent({
         sortEnabled: true,
       },
       {
+        columnName: "Background",
+        columnLabel: "backgroundUrl",
+        columnWidth: 100,
+        sortEnabled: true,
+      },
+      {
         columnName: "Title",
         columnLabel: "title",
         columnWidth: 300,
@@ -146,24 +151,28 @@ export default defineComponent({
     };
 
     const filteredData = async () => {
-      params.value.where = {
-        or: [
-          { title: { like: `%${searchQuery.value}%` } },
-          // {"`SportsGroup`.`title`": { like: `%${searchQuery.value}%` }}
-        ],
-      };
-
+      let whereCondition = {};
+      if(searchQuery.value != ""){
+        whereCondition = {
+          or: [
+            { title: { like: `%${searchQuery.value}%` } },
+          ],
+        };
+      }else{
+        whereCondition = {};
+      }
+      params.value.where = whereCondition;
       await fetchData(); // Fetch data with updated filter
     };
 
     watch(() => searchQuery.value, filteredData);
 
     onMounted(() => {
-      fetchData(); // Calls `fetchData` with the default `params`
+      fetchData(); 
     });
 
     return {
-      getApiUrl,
+      getUploadAssetPath,
       loading,
       tableHeader,
       tableData,

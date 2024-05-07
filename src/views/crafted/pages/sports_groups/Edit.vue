@@ -1,7 +1,7 @@
 <template>
   <div>
     <!-- If sportsGroup data is null, display a loading message or spinner -->
-    <div v-if="record === null">
+    <div v-if="record.id === undefined">
       <p>Loading record details...</p>
       <!-- Optionally, add a loading spinner -->
       <div class="spinner"></div>
@@ -349,7 +349,7 @@ export default defineComponent({
     };
 
     onMounted(() => {
-      fetchRecordData(); // Fetch data when component is mounted
+      fetchRecordData(); 
     });
 
     return {

@@ -14,7 +14,7 @@
         v-model="searchQuery"
         type="text"
         class="form-control mb-4"
-        placeholder="Search by Club name"
+        placeholder="Search..."
       />
       <Datatable
         :loading="loading"
@@ -23,14 +23,6 @@
         @on-sort="handleSort"
       >
         <template v-slot:action="{ row: data }">
-          <!-- <a href="#" class="btn btn-icon btn-sm me-2 btn-light">
-              <i class="ki-duotone ki-trash-square text-danger fs-2x">
-                <span class="path1"></span>
-                <span class="path2"></span>
-                <span class="path3"></span>
-                <span class="path4"></span>
-              </i>
-            </a> -->
           <router-link
             class="btn btn-icon btn-sm me-2 btn-light"
             :to="{ name: 'clubs-edit', params: { id: data.id } }"
@@ -47,9 +39,7 @@
         <template v-slot:imageUrl="{ row: data }">
           <img
             :src="
-              data.imageUrl != '' && data.imageUrl != null
-                ? getApiUrl('.sandbox/' + data.imageUrl)
-                : 'https://placehold.jp/150x100.png'
+              getUploadAssetPath(data.imageUrl)
             "
             :class="`w-100px`"
             alt="image"
@@ -76,7 +66,7 @@
 </template>
 
 <script lang="ts">
-import { getApiUrl } from "@/core/helpers/assets";
+import { getUploadAssetPath } from "@/core/helpers/assets";
 import { defineComponent, ref, onMounted, watch } from "vue";
 import Datatable from "@/components/kt-datatable/KTDataTable.vue";
 import ApiService from "@/core/services/ApiService";
@@ -156,27 +146,24 @@ export default defineComponent({
       if (label) {
         label = label.replace(/_/g, " ");
         params.value.order = [`${label} ${s.order}`];
-        await fetchData(); // Fetch data with new sort order
+        await fetchData();
       }
     };
 
     const filteredData = async () => {
-      params.value.where = {
-        or: [
+      let whereCondition = {};
+      if(searchQuery.value != ""){
+        whereCondition = {
+          or: [
           { name: { like: `%${searchQuery.value}%` } },
-          // {"`SportsGroup`.`title`": { like: `%${searchQuery.value}%` }}
-        ],
-      };
-      params.value.include = [
-        {
-          relation: "sportsGroup",
-          required: true, // Ensure only results with a related sportsGroup are included
-          // scope: {
-          //   where: {title : 'Soccer'}
-          // },
-        },
-      ];
-      await fetchData(); // Fetch data with updated filter
+          {"$sportsGroup.title$": { like: `%${searchQuery.value}%` }}
+          ],
+        };
+      }else{
+        whereCondition = {};
+      }
+      params.value.where = whereCondition;
+      await fetchData(); 
     };
 
     watch(() => searchQuery.value, filteredData);
@@ -186,7 +173,7 @@ export default defineComponent({
     });
 
     return {
-      getApiUrl,
+      getUploadAssetPath,
       loading,
       tableHeader,
       tableData,

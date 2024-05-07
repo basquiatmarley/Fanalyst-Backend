@@ -22,6 +22,25 @@ export const getIllustrationsPath = (illustrationName: string): string => {
 export const getAssetPath = (path: string): string => {
   return import.meta.env.BASE_URL + path;
 };
+
 export const getApiUrl = (path: string): string => {
   return import.meta.env.VITE_APP_API_URL + path;
+};
+
+
+export const getUploadAssetPath = (path = '',prefix = '.sandbox/',noImage = 'no-image.webp'): string => {
+  if(path != "" && path != null){
+    if(path.includes('http')){
+      return path;
+    }else{
+      return import.meta.env.BASE_URL + prefix +  path;
+    }
+  }else{
+    if(noImage.includes('http')){
+      return noImage;
+    }else{
+      return import.meta.env.BASE_URL + noImage;
+    }
+  }
+  
 };

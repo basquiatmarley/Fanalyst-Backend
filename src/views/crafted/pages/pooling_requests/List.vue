@@ -2,7 +2,7 @@
   <!--begin::Timeline-->
   <div class="card">
     <div class="card-header">
-      <h3 class="card-title">Clubs List</h3>
+      <h3 class="card-title">Pooling Request List</h3>
       <div class="card-toolbar">
         <!-- <button type="button" class="btn btn-sm btn-light">
                   Add New
@@ -14,7 +14,7 @@
         v-model="searchQuery"
         type="text"
         class="form-control mb-4"
-        placeholder="Search by Club name"
+        placeholder="Search..."
       />
       <Datatable
         :loading="loading"
@@ -25,24 +25,19 @@
         <template v-slot:action="{ row: data }">
           <router-link
             class="btn btn-icon btn-sm me-2 btn-light"
-            :to="{ name: 'clubs-view', params: { id: data.id } }"
+            :to="{ name: 'pooling-requests-view', params: { id: data.id } }"
           >
             <KTIcon icon-name="eye" icon-class=" text-info fs-2" />
           </router-link>
+        </template>
+        <template v-slot:createdAt="{ row: data }">
+          {{  getLocaleFormatted(data.createdAt,'') }}
         </template>
         <template v-slot:type="{ row: data }">
           {{ data.type }}
         </template>
         <template v-slot:urlRequest="{ row: data }">
           {{ data.urlRequest }}
-        </template>
-        <template v-slot:status="{ row: data }">
-          <div class="text-center">
-            <span v-if="data.status == 1" :class="`badge badge-light-success`">
-              Active
-            </span>
-            <span v-else :class="`badge badge-light-danger`"> Inactive </span>
-          </div>
         </template>
       </Datatable>
     </div>
@@ -51,6 +46,8 @@
 </template>
 
 <script lang="ts">
+import { getApiUrl } from "@/core/helpers/assets";
+import  {getLocaleFormatted}  from "@/core/helpers/date_utils";
 import { defineComponent, ref, onMounted, watch } from "vue";
 import Datatable from "@/components/kt-datatable/KTDataTable.vue";
 import ApiService from "@/core/services/ApiService";
@@ -69,7 +66,7 @@ const getData = async (params) => {
 };
 
 export default defineComponent({
-  name: "pooling-requests-list",
+  name: "clubs-list",
   components: {
     Datatable,
   },
@@ -81,31 +78,30 @@ export default defineComponent({
         columnName: "#",
         columnLabel: "action",
         columnWidth: 100,
+        sortEnabled: false,
+      },
+      {
+        columnName: "Created At",
+        columnLabel: "createdAt",
+        columnWidth: 150,
+        sortEnabled: true,
       },
       {
         columnName: "Type",
         columnLabel: "type",
-        columnWidth: 100,
+        columnWidth: 150,
         sortEnabled: true,
       },
       {
         columnName: "Url Request",
         columnLabel: "urlRequest",
-        columnWidth: 200,
-        sortEnabled: true,
-      },
-      {
-        columnName: "Status",
-        columnLabel: "status",
-        columnWidth: 100,
         sortEnabled: true,
       },
     ]);
     const tableData = ref([]);
     const params = ref<any>({
       where: {},
-      order: {},
-      include: [],
+      order: {}
     });
 
     const fetchData = async () => {
@@ -126,20 +122,12 @@ export default defineComponent({
     const filteredData = async () => {
       params.value.where = {
         or: [
-          { name: { like: `%${searchQuery.value}%` } },
-          // {"`SportsGroup`.`title`": { like: `%${searchQuery.value}%` }}
+          { urlRequest: { like: `%${searchQuery.value}%` } },
+          { type: { like: `%${searchQuery.value}%` } },
         ],
       };
-      params.value.include = [
-        {
-          relation: "sportsGroup",
-          required: true, // Ensure only results with a related sportsGroup are included
-          // scope: {
-          //   where: {title : 'Soccer'}
-          // },
-        },
-      ];
-      await fetchData(); // Fetch data with updated filter
+      
+      await fetchData(); 
     };
 
     watch(() => searchQuery.value, filteredData);
@@ -149,6 +137,8 @@ export default defineComponent({
     });
 
     return {
+      getLocaleFormatted,
+      getApiUrl,
       loading,
       tableHeader,
       tableData,
@@ -158,3 +148,4 @@ export default defineComponent({
   },
 });
 </script>
+@/core/helpers/_DateUtils

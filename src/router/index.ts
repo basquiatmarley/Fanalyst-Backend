@@ -44,6 +44,16 @@ const routes: Array<RouteRecordRaw> = [
         },
       },
       {
+        path: "/pooling-requests/:id",
+        name: "pooling-requests-view",
+        component: () =>
+          import("@/views/crafted/pages/pooling_requests/View.vue"),
+        meta: {
+          pageTitle: "Pooling Requests View",
+          breadcrumbs: ["Pooling Requests View"],
+        },
+      },
+      {
         path: "/clubs",
         name: "clubs-list",
         component: () => import("@/views/crafted/pages/clubs/List.vue"),
@@ -140,15 +150,6 @@ const routes: Array<RouteRecordRaw> = [
         meta: {
           pageTitle: "Event View",
           breadcrumbs: ["Events List", "Event View"],
-        },
-      },
-      {
-        path: "/events/edit/:id",
-        name: "events-edit",
-        component: () => import("@/views/crafted/pages/events/Edit.vue"),
-        meta: {
-          pageTitle: "Event Edit",
-          breadcrumbs: ["Events List", "Event Edit"],
         },
       },
       {

@@ -5,7 +5,7 @@
   >
     <!--begin::Symbol-->
     <div class="symbol symbol-50px">
-      <img :src="getAssetPath('media/avatars/300-1.jpg?>')" alt="" />
+      <img :src="getUploadAssetPath(store.user.imageUrl)" alt="" />
     </div>
     <!--end::Symbol-->
 
@@ -61,7 +61,7 @@
 </template>
 
 <script lang="ts">
-import { getAssetPath } from "@/core/helpers/assets";
+import { getUploadAssetPath } from "@/core/helpers/assets";
 import { defineComponent, onMounted } from "vue";
 import UserMenu from "@/layouts/default-layout/components/menus/UserAccountMenu.vue";
 import { useAuthStore } from "@/stores/auth";
@@ -77,7 +77,7 @@ export default defineComponent({
 
     return {
       store,
-      getAssetPath,
+      getUploadAssetPath,
     };
   },
 });

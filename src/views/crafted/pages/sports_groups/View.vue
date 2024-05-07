@@ -1,7 +1,7 @@
 <template>
   <div>
     <!-- If sportsGroup data is null, display a loading message or spinner -->
-    <div v-if="record === null">
+    <div v-if="record.id === undefined">
       <p>Loading sportsGroup details...</p>
       <!-- Optionally, add a loading spinner -->
       <div class="spinner"></div>
@@ -21,102 +21,60 @@
         </div>
       </div>
       <div class="card-body pt-9 pb-0">
-        <!--begin::Details-->
-        <div class="d-flex flex-wrap flex-sm-nowrap mb-3">
-          <!--begin: Pic-->
-          <div class="me-7 mb-4">
-            <div
-              class="symbol symbol-100px symbol-lg-160px symbol-fixed position-relative"
-            >
-              <img
+        <div class="table-responsive">
+          <table class="table align-top gs-0 gy-3">
+              <thead>
+                  <tr>
+                      <th class="p-0 w-150px"></th>
+                      <th class="p-0 w-150px"></th>
+                      <th class="p-0 min-w-150px"></th>
+                  </tr>
+              </thead>
+              <tbody>
+                  <tr>
+                      <td>
+                        <div class="symbol symbol-150px mb-10">
+                              <img
+                                  :src="
+                                   getUploadAssetPath(record.imageUrl)
+                                  "
+                                  alt="Logo Sport Group">
+                          </div>
+                          </td>
+                          <td>
+                        <div class="symbol symbol-150px mb-10">
+                          <img
                 :src="
-                  record.imageUrl != ''
-                    ? getApiUrl('.sandbox/' + record.imageUrl)
-                    : 'https://placehold.jp/150x150.png'
+                getUploadAssetPath(record.backgroundUrl)
                 "
                 alt="image"
               />
-            </div>
-          </div>
-          <!--end::Pic-->
+                          </div>
+                      </td>
+                      <td>
+                        <span class="text-gray-900 fw-bold d-block fs-7">Title</span>
+                        <span class="text-muted fw-semibold d-block w-200px">{{ record.title}}</span>
+                        <span class="text-gray-900 fw-bold d-block fs-7">Created At</span>
+                        <span class="text-muted fw-semibold d-block  w-200">{{ getLocaleFormatted(record.createdAt)}}</span>
 
-          <!--begin::Info-->
-          <div class="flex-grow-1">
-            <!--begin::Title-->
-            <div
-              class="d-flex justify-content-between align-items-start flex-wrap mb-2"
-            >
-              <!--begin::User-->
-              <div class="d-flex flex-column">
-                <!--begin::Name-->
-                <div class="d-flex align-items-center mb-2">
-                  <span class="text-gray-800 fs-2 fw-bold me-1">{{
-                    record.title
-                  }}</span>
-                </div>
-                <!--end::Name-->
-
-                <!--begin::Info-->
-                <div class="d-flex flex-wrap fw-semibold fs-5 pe-2">
-                  <div
-                    class="d-flex align-items-center text-gray-800 me-5 mb-2"
-                  >
-                    <span class="text-gray-800 me-2">Status :</span>
-                    <span
-                      v-if="record.status == 1"
-                      :class="`badge badge-light-success`"
-                    >
-                      Active
-                    </span>
-                    <span v-else :class="`badge badge-light-danger`">
-                      Inactive
-                    </span>
-                  </div>
-                </div>
-                <!--end::Info-->
-                <!--begin::Info-->
-                <div class="d-flex flex-wrap fw-semibold fs-5 pe-2">
-                  <div
-                    class="d-flex align-items-center text-gray-800 me-5 mb-2"
-                  >
-                    <span class="text-gray-800 me-2">Created At :</span>
-                    <span :class="``">
-                      {{ record.createdAt }}
-                    </span>
-                  </div>
-                </div>
-                <!--end::Info-->
-                <!--begin::Info-->
-                <div class="d-flex flex-wrap fw-semibold fs-5 pe-2">
-                  <div
-                    class="d-flex align-items-center text-gray-800 me-5 mb-2"
-                  >
-                    <span class="text-gray-800 me-2">Update At :</span>
-                    <span :class="``">
-                      {{ record.updatedAt }}
-                    </span>
-                  </div>
-                </div>
-                <!--end::Info-->
-              </div>
-              <!--end::User-->
-            </div>
-            <!--end::Title-->
-          </div>
-          <!--end::Info-->
+                        <span class="text-gray-900 fw-bold d-block fs-7">Updated At</span>
+                        <span class="text-muted fw-semibold d-block  w-200">{{ getLocaleFormatted(record.createdAt)}}</span>
+                      </td>
+                    </tr>
+              </tbody>
+          </table>
         </div>
-        <!--end::Details-->
       </div>
     </div>
   </div>
 </template>
 
 <script lang="ts">
-import { getApiUrl } from "@/core/helpers/assets";
+import { getUploadAssetPath } from "@/core/helpers/assets";
 import ApiService from "@/core/services/ApiService";
 import { defineComponent, onMounted, ref } from "vue";
 import { useRoute } from "vue-router";
-import { dateTolocaleFormat } from "@/assets/ts/_utils/_TypesHelpers";
+import  {getLocaleFormatted}  from "@/core/helpers/date_utils";
 import type { SportsGroup } from "@/core/model/SportsGroup";
 const getData = async (id) => {
   try {
@@ -137,21 +95,19 @@ export default defineComponent({
     const recordId = route.params.id; // Get 'id' from the route
     const record = ref<SportsGroup>({} as SportsGroup);
 
-    const fetchSportsGroupData = async () => {
+    const fetchData = async () => {
       const data = await getData(recordId);
-      data.createdAt = dateTolocaleFormat(data.createdAt);
-      data.updatedAt = dateTolocaleFormat(data.updatedAt);
       record.value = data;
     };
 
     onMounted(() => {
-      fetchSportsGroupData(); // Fetch data when component is mounted
+      fetchData(); // Fetch data when component is mounted
     });
 
     return {
-      dateTolocaleFormat,
+      getLocaleFormatted,
       record,
-      getApiUrl,
+      getUploadAssetPath,
     };
   },
 });

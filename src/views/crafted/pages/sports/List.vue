@@ -47,9 +47,7 @@
         <template v-slot:imageUrl="{ row: data }">
           <img
             :src="
-              data.imageUrl != '' && data.imageUrl != null
-                ? getApiUrl('.sandbox/' + data.imageUrl)
-                : 'https://placehold.jp/150x100.png'
+            getUploadAssetPath(data.imageUrl)
             "
             :class="`w-100px`"
             alt="image"
@@ -76,7 +74,7 @@
 </template>
 
 <script lang="ts">
-import { getApiUrl } from "@/core/helpers/assets";
+import { getUploadAssetPath } from "@/core/helpers/assets";
 import { defineComponent, ref, onMounted, watch } from "vue";
 import Datatable from "@/components/kt-datatable/KTDataTable.vue";
 import ApiService from "@/core/services/ApiService";
@@ -161,32 +159,29 @@ export default defineComponent({
     };
 
     const filteredData = async () => {
-      params.value.where = {
-        or: [
-          { name: { like: `%${searchQuery.value}%` } },
-          // {"`SportsGroup`.`title`": { like: `%${searchQuery.value}%` }}
-        ],
-      };
-      params.value.include = [
-        {
-          relation: "sportsGroup",
-          required: true, // Ensure only results with a related sportsGroup are included
-          // scope: {
-          //   where: {title : 'Soccer'}
-          // },
-        },
-      ];
-      await fetchData(); // Fetch data with updated filter
+      let whereCondition = {};
+      if(searchQuery.value != ""){
+        whereCondition = {
+          or: [
+            { "title": { like: `%${searchQuery.value}%` } },
+            { "$sportsGroup.title$": { like: `%${searchQuery.value}%` } },
+          ],
+        };
+      }else{
+        whereCondition = {};
+      }
+      params.value.where = whereCondition;
+      await fetchData();
     };
 
     watch(() => searchQuery.value, filteredData);
 
     onMounted(() => {
-      fetchData(); // Calls `fetchData` with the default `params`
+      fetchData(); 
     });
 
     return {
-      getApiUrl,
+      getUploadAssetPath,
       loading,
       tableHeader,
       tableData,

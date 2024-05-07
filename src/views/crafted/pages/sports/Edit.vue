@@ -1,7 +1,7 @@
 <template>
   <div>
     <!-- If club data is null, display a loading message or spinner -->
-    <div v-if="record === null">
+    <div v-if="record.id === undefined">
       <p>Loading data details...</p>
       <!-- Optionally, add a loading spinner -->
       <div class="spinner"></div>

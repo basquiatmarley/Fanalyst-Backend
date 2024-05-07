@@ -1,7 +1,7 @@
 <template>
   <div>
     <!-- If club data is null, display a loading message or spinner -->
-    <div v-if="record === null">
+    <div v-if="record.id === undefined">
       <p>Loading data details...</p>
       <!-- Optionally, add a loading spinner -->
       <div class="spinner"></div>
@@ -30,9 +30,7 @@
             >
               <img
                 :src="
-                  record.imageUrl != ''
-                    ? getApiUrl('.sandbox/' + record.imageUrl)
-                    : 'https://placehold.jp/150x100.png'
+                  getUploadAssetPath(record.imageUrl)
                 "
                 alt="image"
               />
@@ -111,7 +109,7 @@
                   >
                     <span class="text-gray-800 me-2">Created At :</span>
                     <span :class="``">
-                      {{ record.createdAt }}
+                      {{ getLocaleFormatted(record.createdAt) }}
                     </span>
                   </div>
                 </div>
@@ -123,7 +121,7 @@
                   >
                     <span class="text-gray-800 me-2">Update At :</span>
                     <span :class="``">
-                      {{ record.updatedAt }}
+                      {{ getLocaleFormatted(record.updatedAt) }}
                     </span>
                   </div>
                 </div>
@@ -142,11 +140,11 @@
 </template>
 
 <script lang="ts">
-import { getApiUrl } from "@/core/helpers/assets";
+import { getUploadAssetPath } from "@/core/helpers/assets";
 import ApiService from "@/core/services/ApiService";
 import { defineComponent, onMounted, ref } from "vue";
 import { useRoute } from "vue-router";
-import { dateTolocaleFormat } from "@/assets/ts/_utils/_TypesHelpers";
+import  {getLocaleFormatted}  from "@/core/helpers/date_utils";
 import type { User } from "@/core/model/User";
 const getData = async (id) => {
   try {
@@ -169,20 +167,18 @@ export default defineComponent({
     const clubId = route.params.id; // Get 'id' from the route
     const record = ref<User>({} as User);
 
-    const fetchUserData = async () => {
+    const fetchData = async () => {
       const data = await getData(clubId);
-      data.createdAt = dateTolocaleFormat(data.createdAt);
-      data.updatedAt = dateTolocaleFormat(data.updatedAt);
       record.value = data;
     };
 
     onMounted(() => {
-      fetchUserData(); // Fetch data when component is mounted
+      fetchData(); // Fetch data when component is mounted
     });
 
     return {
-      getApiUrl,
-      dateTolocaleFormat,
+      getUploadAssetPath,
+      getLocaleFormatted,
       record,
     };
   },

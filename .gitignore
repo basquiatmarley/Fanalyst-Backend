@@ -32,3 +32,4 @@ coverage
 yarn.lock
 .env
 Dockerfile
+public/.sandbox

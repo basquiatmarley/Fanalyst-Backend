@@ -16,6 +16,12 @@ const MainMenuConfig: Array<MenuItem> = [
     route: "/master-data",
     pages: [
       {
+        heading: "Banners",
+        route: "/banners",
+        keenthemesIcon: "element-11",
+        bootstrapIcon: "bi-app-indicator",
+      },
+      {
         heading: "Pooling Requests",
         route: "/pooling-requests",
         keenthemesIcon: "element-11",

@@ -188,6 +188,42 @@ const routes: Array<RouteRecordRaw> = [
           breadcrumbs: ["Users", "Users Edit"],
         },
       },
+      {
+        path: "/banners",
+        name: "banners-list",
+        component: () => import("@/views/crafted/pages/banners/List.vue"),
+        meta: {
+          pageTitle: "Banners List",
+          breadcrumbs: ["Banners List"],
+        },
+      },
+      {
+        path: "/banners/:id",
+        name: "banners-view",
+        component: () => import("@/views/crafted/pages/banners/View.vue"),
+        meta: {
+          pageTitle: "Banners View",
+          breadcrumbs: ["Banners List", "Banners View"],
+        },
+      },
+      {
+        path: "/banners/edit/:id",
+        name: "banners-edit",
+        component: () => import("@/views/crafted/pages/banners/Edit.vue"),
+        meta: {
+          pageTitle: "Banners Edit",
+          breadcrumbs: ["Banners", "Banners Edit"],
+        },
+      },
+      {
+        path: "/banners/create",
+        name: "banners-create",
+        component: () => import("@/views/crafted/pages/banners/Create.vue"),
+        meta: {
+          pageTitle: "Banners Edit",
+          breadcrumbs: ["Banners", "Banners Edit"],
+        },
+      },
     ],
   },
   {

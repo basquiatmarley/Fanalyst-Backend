@@ -368,7 +368,7 @@ export default defineComponent({
         var params: UserParams  = {
           role: record.value.role,
           imageUrl: record.value.imageUrl,
-          status: record.value.status ? 1 : 0,
+          status: record.value.status,
           firstName: record.value.firstName,
           lastName: record.value.lastName,
           email: record.value.email,

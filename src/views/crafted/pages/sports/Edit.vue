@@ -139,7 +139,7 @@
                       class="form-check-input w-45px h-30px"
                       type="checkbox"
                       value="0"
-                      :checked="record.status == 1 && true"
+                      :checked="record.status"
                       v-model="record.status"
                       id="status"
                     />
@@ -260,6 +260,7 @@ export default defineComponent({
     const fileSelected = ref([]);
     const fetchSportData = async () => {
       const data = await getData(recordId);
+      data.status = data.status ==1;
       record.value = data;
     };
     const changeFileHandle = (event) => {

@@ -134,12 +134,13 @@
 
                 <!--begin::Label-->
                 <div class="col-lg-8 d-flex align-items-center">
+                  
                   <div class="form-check form-check-solid form-switch fv-row">
                     <input
                       class="form-check-input w-45px h-30px"
                       type="checkbox"
-                      value="0"
-                      :checked="record.status == 1 && true"
+                      value="true"
+                      :checked="record.status"
                       v-model="record.status"
                       id="status"
                     />
@@ -259,6 +260,7 @@ export default defineComponent({
     const fileSelected = ref([]);
     const fetchClubData = async () => {
       const data = await getData(recordId);
+      data.status = data.status ==1;
       record.value = data;
     };
     const changeFileHandle = (event) => {
@@ -280,11 +282,10 @@ export default defineComponent({
         }
         var params = {
           imageUrl: record.value.imageUrl,
-          status: record.value.status ? 1 : 0,
+          status: record.value.status,
           name: record.value.name,
         };
         const postData = await postEditHandle(recordId, params);
-        console.log(postData);
         submitButtonEl.value?.removeAttribute("data-kt-indicator");
         submitButtonEl.value?.removeAttribute("disabled");
         if (postData.status) {

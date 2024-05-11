@@ -15,7 +15,7 @@ export interface Event {
   commenceTime: Date; // Event start time
   winner?: number; // Winner ID (optional, as it might not be decided yet)
   completed?: number; // Status indicating if event is completed
-  status: number; // General status (active, inactive, etc.)
+  status: boolean; // General status (active, inactive, etc.)
   createdAt: Date; // Timestamp for when the event was created
   createdBy?: number | null; // ID of the user who created it (can be null)
   updatedAt?: Date | null; // Timestamp for the last update (can be null)

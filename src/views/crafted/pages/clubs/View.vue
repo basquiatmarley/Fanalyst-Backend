@@ -71,7 +71,7 @@
                   >
                     <span class="text-gray-800 me-2">Status :</span>
                     <span
-                      v-if="record.status == 1"
+                      v-if="record.status"
                       :class="`badge badge-light-success`"
                     >
                       Active

@@ -7,7 +7,7 @@ export interface User {
   role: string;
   imageUrl: string;
   api_token: string;
-  status: number;
+  status: boolean;
   createdAt?: Date;
   updatedAt?: Date;
   createdBy?: number;
@@ -25,7 +25,7 @@ export class User {
     public role: string,
     public imageUrl: string,
     public api_token: string,
-    public status: number,
+    public status: boolean,
     public statusDeleted?: number,
     public createdBy?: number,
     public updatedBy?: number,

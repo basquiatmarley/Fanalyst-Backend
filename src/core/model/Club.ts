@@ -4,7 +4,7 @@ export interface Club {
   id: number; // Primary key
   sportsGroupId: number; // Foreign key to a sports group
   name: string; // Club name (unique)
-  status: number; // Status as an integer (2)
+  status: boolean; // Status as an integer (2)
   imageUrl: string; // URL for the club's image
   createdAt: Date; // Timestamp for when the club was created
   createdBy?: number | null; // ID of the user who created the club (optional, default null)

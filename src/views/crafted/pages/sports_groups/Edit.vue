@@ -141,7 +141,7 @@
                       class="form-check-input w-45px h-30px"
                       type="checkbox"
                       value="0"
-                      :checked="record.status == 1 && true"
+                      :checked="record.status"
                       v-model="record.status"
                       id="status"
                     />
@@ -166,7 +166,7 @@
                       class="form-check-input w-45px h-30px"
                       type="checkbox"
                       value="0"
-                      :checked="record.statusHotest == 1 && true"
+                      :checked="record.statusHotest"
                       v-model="record.statusHotest"
                       id="statusHotest"
                     />
@@ -274,6 +274,8 @@ export default defineComponent({
     const fileSelectedBg = ref([]);
     const fetchRecordData = async () => {
       const data = await getData(recordId);
+      data.status = data.status ==1;
+      data.statusHotest = data.statusHotest ==1;
       record.value = data;
     };
     const changeFileHandle = (event) => {

@@ -135,8 +135,8 @@
                     <input
                       class="form-check-input w-45px h-30px"
                       type="checkbox"
-                      value="0"
-                      :checked="record.status == 1 && true"
+                      value="1"
+                      :checked="record.status"
                       v-model="record.status"
                       id="status"
                     />
@@ -200,7 +200,7 @@ interface BannerParams {
       name: string;
       route?: string;
       imageUrl: string;
-      status: number;
+      status: boolean;
     }
 const getData = async (id) => {
   try {
@@ -249,6 +249,7 @@ export default defineComponent({
     const fileSelected = ref([]);
     const fetchBannerData = async () => {
       const data = await getData(recordId);
+      data.status = data.status ==1;
       record.value = data;
     };
     const changeFileHandle = (event) => {
@@ -274,7 +275,7 @@ export default defineComponent({
         var params: BannerParams  = {
           name: record.value.name,
           imageUrl: record.value.imageUrl,
-          status: record.value.status ? 1 : 0,
+          status: record.value.status ,
           route: record.value.route,
         };
         const postData = await postEditHandle(recordId, params);

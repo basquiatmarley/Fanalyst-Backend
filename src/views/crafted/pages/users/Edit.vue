@@ -223,7 +223,7 @@
                       class="form-check-input w-45px h-30px"
                       type="checkbox"
                       value="0"
-                      :checked="record.status == 1 && true"
+                      :checked="record.status"
                       v-model="record.status"
                       id="status"
                     />
@@ -286,7 +286,7 @@ import * as Yup from "yup";
 interface UserParams {
       role: string;
       imageUrl: string;
-      status: number;
+      status: boolean;
       firstName: string;
       lastName: string;
       email: string;

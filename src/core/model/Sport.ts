@@ -5,7 +5,7 @@ export interface Sport {
   sportsGroupId: number; // Foreign key to a sports group
   key: string; // Unique key
   title: string; // Title of the sport
-  status: number; // Status (usually a code indicating active/inactive)
+  status: boolean; // Status (usually a code indicating active/inactive)
   imageUrl?: string; // Optional field for an image URL
   createdAt: Date; // Timestamp for creation
   createdBy?: number | null; // ID of the user who created it

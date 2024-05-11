@@ -132,7 +132,7 @@
                       class="form-check-input w-45px h-30px"
                       type="checkbox"
                       value="0"
-                      :checked="record.status == 1 && true"
+                      :checked="record.status"
                       v-model="record.status"
                       id="status"
                     />

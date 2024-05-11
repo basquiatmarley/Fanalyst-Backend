@@ -1,8 +1,8 @@
 export interface SportsGroup {
   id: number; // Primary key, auto-incrementing
   title: string; // Title of the sports group
-  statusHotest: number; // Status indicating if it's one of the hottest groups (integer)
-  status: number; // Status (e.g., active, inactive)
+  statusHotest: boolean; // Status indicating if it's one of the hottest groups (integer)
+  status: boolean; // Status (e.g., active, inactive)
   imageUrl: string; // URL for the group's image
   backgroundUrl: string; // URL for the group's image
   createdAt: Date; // Timestamp for when the group was created

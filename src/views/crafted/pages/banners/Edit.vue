@@ -272,10 +272,10 @@ export default defineComponent({
             record.value.imageUrl = uploadFilePost.files[0];
           }
         }
-        var params: BannerParams  = {
+        var params = {
           name: record.value.name,
           imageUrl: record.value.imageUrl,
-          status: record.value.status ,
+          status: record.value.status ? 1 : 0,
           route: record.value.route,
         };
         const postData = await postEditHandle(recordId, params);

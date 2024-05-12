@@ -260,7 +260,7 @@ export default defineComponent({
     const fileSelected = ref([]);
     const fetchClubData = async () => {
       const data = await getData(recordId);
-      data.status = data.status ==1;
+      data.status = data.status ==1;  
       record.value = data;
     };
     const changeFileHandle = (event) => {
@@ -282,7 +282,7 @@ export default defineComponent({
         }
         var params = {
           imageUrl: record.value.imageUrl,
-          status: record.value.status,
+          status: record.value.status ? 1 :0,
           name: record.value.name,
         };
         const postData = await postEditHandle(recordId, params);

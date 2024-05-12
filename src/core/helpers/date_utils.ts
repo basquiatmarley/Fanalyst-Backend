@@ -2,7 +2,6 @@ function getLocaleFormatted ( dateTime, format = '' ) {
     // Create a Date object from the input dateTime string
       // Handle different formatting options
     let formattedDate = '';
-    console.log(dateTime);
     if(dateTime != null && dateTime != '' && dateTime != undefined){
       const date = new Date(dateTime);
       switch (format) {

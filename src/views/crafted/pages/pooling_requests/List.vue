@@ -20,6 +20,9 @@
         :loading="loading"
         :header="tableHeader"
         :data="tableData"
+        :total="countData"
+        @page-change="changePage"
+        @on-items-per-page-change="changeRowsPerPageLimit"
         @on-sort="handleSort"
       >
         <template v-slot:action="{ row: data }">
@@ -50,29 +53,14 @@ import { getApiUrl } from "@/core/helpers/assets";
 import  {getLocaleFormatted}  from "@/core/helpers/date_utils";
 import { defineComponent, ref, onMounted, watch } from "vue";
 import Datatable from "@/components/kt-datatable/KTDataTable.vue";
-import ApiService from "@/core/services/ApiService";
-// Function to fetch data from the API
-const getData = async (params) => {
-  try {
-    ApiService.setHeader();
-    const response = await ApiService.query("pooling-requests", {
-      params: { filter: params },
-    });
-    return response.data;
-  } catch (error) {
-    console.error("Error fetching data:", error);
-    return [];
-  }
-};
+import DataTablesService from "@/core/services/DataTablesSevice";
 
 export default defineComponent({
-  name: "clubs-list",
+  name: "pooling-requests-list",
   components: {
     Datatable,
   },
   setup() {
-    const loading = ref(true);
-    const searchQuery = ref("");
     const tableHeader = ref([
       {
         columnName: "#",
@@ -98,45 +86,54 @@ export default defineComponent({
         sortEnabled: true,
       },
     ]);
+    const loading = ref(true);
+    const searchQuery = ref("");
     const tableData = ref([]);
-    const params = ref<any>({
-      where: {},
-      order: {}
-    });
-
+    const countData = ref<number>(0);
+    const params = ref(DataTablesService.loadParamsFromStorage() || { offset: 0, limit: 10, where: {}, order: {} });
+    const urlPagination = "/pooling-requests/pagination";
     const fetchData = async () => {
       loading.value = true;
-      tableData.value = await getData(params.value);
+      const { data, params: updatedParams } = await DataTablesService.fetchDatax(urlPagination, params.value);
+      tableData.value = data.records;
+      countData.value = data.totalCount;
+      params.value = updatedParams; // Update params in the component
+      DataTablesService.saveParamsToStorage(updatedParams); 
       loading.value = false;
     };
 
-    const handleSort = async (s) => {
-      let label = s.label;
-      if (label) {
-        label = label.replace(/_/g, " ");
-        params.value.order = [`${label} ${s.order}`];
-        await fetchData(); // Fetch data with new sort order
-      }
+    const handleSort = async (sLabel) => {
+      await DataTablesService.handleSort(sLabel,params.value, fetchData);
     };
 
-    const filteredData = async () => {
-      params.value.where = {
+    const changeRowsPerPageLimit = async (num) => {
+      await DataTablesService.changeRowsPerPageLimit(num, params.value, fetchData);
+    };
+
+    const changePage = async (num) => {
+      await DataTablesService.changePage(num, params.value, fetchData);
+    };
+
+    const filterData = async () => {
+      const paramsQuery = {
         or: [
           { urlRequest: { like: `%${searchQuery.value}%` } },
           { type: { like: `%${searchQuery.value}%` } },
         ],
       };
-      
-      await fetchData(); 
+      await DataTablesService.filterData(params.value, paramsQuery, fetchData);
     };
 
-    watch(() => searchQuery.value, filteredData);
-
     onMounted(() => {
-      fetchData(); // Calls `fetchData` with the default `params`
+      fetchData();
     });
 
+    watch(searchQuery, filterData);
+
     return {
+      changePage,
+      changeRowsPerPageLimit,
+      countData,
       getLocaleFormatted,
       getApiUrl,
       loading,
@@ -148,4 +145,3 @@ export default defineComponent({
   },
 });
 </script>
-@/core/helpers/_DateUtils

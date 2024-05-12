@@ -12,6 +12,7 @@ import i18n from "@/core/plugins/i18n";
 
 //imports for app initialization
 import ApiService from "@/core/services/ApiService";
+import DataTablesService from "@/core/services/DataTablesSevice";
 import { initApexCharts } from "@/core/plugins/apexcharts";
 import { initInlineSvg } from "@/core/plugins/inline-svg";
 import { initVeeValidate } from "@/core/plugins/vee-validate";

@@ -20,6 +20,9 @@
         :loading="loading"
         :header="tableHeader"
         :data="tableData"
+        :total="countData"
+        @page-change="changePage"
+        @on-items-per-page-change="changeRowsPerPageLimit"
         @on-sort="handleSort"
       >
         <template v-slot:action="{ row: data }">
@@ -69,20 +72,7 @@
 import { getUploadAssetPath } from "@/core/helpers/assets";
 import { defineComponent, ref, onMounted, watch } from "vue";
 import Datatable from "@/components/kt-datatable/KTDataTable.vue";
-import ApiService from "@/core/services/ApiService";
-// Function to fetch data from the API
-const getData = async (params) => {
-  try {
-    ApiService.setHeader();
-    const response = await ApiService.query("clubs", {
-      params: { filter: params },
-    });
-    return response.data;
-  } catch (error) {
-    console.error("Error fetching data:", error);
-    return [];
-  }
-};
+import DataTablesService from "@/core/services/DataTablesSevice";
 
 export default defineComponent({
   name: "clubs-list",
@@ -90,8 +80,6 @@ export default defineComponent({
     Datatable,
   },
   setup() {
-    const loading = ref(true);
-    const searchQuery = ref("");
     const tableHeader = ref([
       {
         columnName: "#",
@@ -123,56 +111,55 @@ export default defineComponent({
         sortEnabled: true,
       },
     ]);
-    const tableData = ref([]);
-    const params = ref<any>({
-      where: {},
-      order: {},
-      include: [
-        {
-          relation: "sportsGroup",
-          required: true,
-        },
-      ],
-    });
 
+    const loading = ref(true);
+    const searchQuery = ref("");
+    const tableData = ref([]);
+    const countData = ref<number>(0);
+    const params = ref(DataTablesService.loadParamsFromStorage() || { offset: 0, limit: 10, where: {}, order: {},include: ["sportsGroup"      ], });
+    const urlPagination = "/clubs/pagination";
     const fetchData = async () => {
       loading.value = true;
-      tableData.value = await getData(params.value);
+      const { data, params: updatedParams } = await DataTablesService.fetchDatax(urlPagination, params.value);
+      tableData.value = data.records;
+      countData.value = data.totalCount;
+      params.value = updatedParams; // Update params in the component
+      DataTablesService.saveParamsToStorage(updatedParams); 
       loading.value = false;
     };
 
-    const handleSort = async (s) => {
-      let label = s.label;
-      if (label) {
-        label = label.replace(/_/g, " ");
-        params.value.order = [`${label} ${s.order}`];
-        await fetchData();
-      }
+    const handleSort = async (sLabel) => {
+      await DataTablesService.handleSort(sLabel,params.value, fetchData);
     };
 
-    const filteredData = async () => {
-      let whereCondition = {};
-      if(searchQuery.value != ""){
-        whereCondition = {
-          or: [
+    const changeRowsPerPageLimit = async (num) => {
+      await DataTablesService.changeRowsPerPageLimit(num, params.value, fetchData);
+    };
+
+    const changePage = async (num) => {
+      await DataTablesService.changePage(num, params.value, fetchData);
+    };
+
+    const filterData = async () => {
+      const paramsQuery = {
+        or: [
           { name: { like: `%${searchQuery.value}%` } },
           {"$sportsGroup.title$": { like: `%${searchQuery.value}%` }}
           ],
-        };
-      }else{
-        whereCondition = {};
-      }
-      params.value.where = whereCondition;
-      await fetchData(); 
+      };
+      await DataTablesService.filterData(params.value, paramsQuery, fetchData);
     };
 
-    watch(() => searchQuery.value, filteredData);
-
     onMounted(() => {
-      fetchData(); // Calls `fetchData` with the default `params`
+      fetchData();
     });
 
+    watch(searchQuery, filterData);
+
     return {
+      changePage,
+      changeRowsPerPageLimit,
+      countData,
       getUploadAssetPath,
       loading,
       tableHeader,

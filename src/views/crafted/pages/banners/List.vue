@@ -23,6 +23,9 @@
         :loading="loading"
         :header="tableHeader"
         :data="tableData"
+        :total="countData"
+        @page-change="changePage"
+        @on-items-per-page-change="changeRowsPerPageLimit"
         @on-sort="handleSort"
       >
         <template v-slot:action="{ row: data }">
@@ -82,20 +85,8 @@ import { defineComponent, ref, onMounted, watch } from "vue";
 import Datatable from "@/components/kt-datatable/KTDataTable.vue";
 import ApiService from "@/core/services/ApiService";
 import Swal from "sweetalert2/dist/sweetalert2.js";
-// Function to fetch data from the API
-const getData = async (params) => {
-  try {
-    ApiService.setHeader();
-    const response = await ApiService.query("banners", {
-      params: { filter: params },
-    });
-    return response.data;
-  } catch (error) {
-    console.error("Error fetching data:", error);
-    return [];
-  }
-};
-const deleteData = async (id) => {
+import DataTablesService from "@/core/services/DataTablesSevice";
+const deleteData = async (id: any) => {
   try {
     ApiService.setHeader();
     const response = await ApiService.delete(`banners/${id}`);
@@ -112,8 +103,6 @@ export default defineComponent({
     Datatable,
   },
   setup() {
-    const loading = ref(true);
-    const searchQuery = ref("");
     const tableHeader = ref([
       {
         columnName: "#",
@@ -145,27 +134,7 @@ export default defineComponent({
         sortEnabled: true,
       },
     ]);
-    const tableData = ref([]);
-    const params = ref<any>({
-      where: {},
-      order: {},
-    });
-
-    const fetchData = async () => {
-      loading.value = true;
-      tableData.value = await getData(params.value);
-      loading.value = false;
-    };
-
-    const handleSort = async (s) => {
-      let label = s.label;
-      if (label) {
-        label = label.replace(/_/g, " ");
-        params.value.order = [`${label} ${s.order}`];
-        await fetchData(); // Fetch data with new sort order
-      }
-    };
-    const handleDelete = async(id) =>{
+    const handleDelete = async(id: any) =>{
       Swal.fire({
           text: "Are you sure delete this record?",
           icon: "info",
@@ -205,35 +174,60 @@ export default defineComponent({
            }
         });
     }
-    const filteredData = async () => {
-      let whereCondition = {};
-      if(searchQuery.value != ""){
-        whereCondition = {
-          or: [
+    const loading = ref(true);
+    const searchQuery = ref("");
+    const tableData = ref([]);
+    const countData = ref<number>(0);
+    const params = ref(DataTablesService.loadParamsFromStorage() || { offset: 0, limit: 10, where: {}, order: {} });
+    const urlPagination = "/banners/pagination";
+    const fetchData = async () => {
+      loading.value = true;
+      const { data, params: updatedParams } = await DataTablesService.fetchDatax(urlPagination, params.value);
+      tableData.value = data.records;
+      countData.value = data.totalCount;
+      params.value = updatedParams; // Update params in the component
+      DataTablesService.saveParamsToStorage(updatedParams); 
+      loading.value = false;
+    };
+
+    const handleSort = async (sLabel: any) => {
+      await DataTablesService.handleSort(sLabel,params.value, fetchData);
+    };
+
+    const changeRowsPerPageLimit = async (num: number) => {
+      await DataTablesService.changeRowsPerPageLimit(num, params.value, fetchData);
+    };
+
+    const changePage = async (num: number) => {
+      await DataTablesService.changePage(num, params.value, fetchData);
+    };
+
+    const filterData = async () => {
+      const paramsQuery = {
+        or: [
           { name: { like: `%${searchQuery.value}%` } },
           { route: { like: `%${searchQuery.value}%` } },
           ],
-        };
-      }else{
-        whereCondition = {};
-      }
-      params.value.where = whereCondition;
-      await fetchData(); // Fetch data with updated filter
+      };
+      await DataTablesService.filterData(params.value, paramsQuery, fetchData);
     };
 
-    watch(() => searchQuery.value, filteredData);
-
     onMounted(() => {
-      fetchData(); // Calls `fetchData` with the default `params`
+      fetchData();
     });
 
+    watch(searchQuery, filterData);
+
     return {
+      changeRowsPerPageLimit,
+      changePage,
       handleDelete,
       getUploadAssetPath,
       loading,
       tableHeader,
       tableData,
       searchQuery,
+      countData,
       handleSort,
     };
   },

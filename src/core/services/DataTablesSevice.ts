@@ -2,16 +2,23 @@
 import ApiService from "@/core/services/ApiService";
 
 class DataTablesService {
-    static saveParamsToStorage(params: any,): void {
-        const URL_PATH = window.location.pathname;
-        localStorage.setItem(`dataTablesParams${URL_PATH}`, JSON.stringify(params)); // Save params to localStorage
-    }
+  static saveParamsToStorage(params: any,searchValue : any = ''): void {
+    const URL_PATH = window.location.pathname;;
+    localStorage.setItem(`dataTablesParams${URL_PATH}`, JSON.stringify(params));
+    localStorage.setItem(`dataTablesParams${URL_PATH}-searchvalue`, searchValue);
+  }
 
-    static loadParamsFromStorage(): any {
-        const URL_PATH = window.location.pathname;
-        const storedParams = localStorage.getItem(`dataTablesParams${URL_PATH}`);
-        return storedParams ? JSON.parse(storedParams) : null; // Load params from localStorage
-    }
+  static loadParamsFromStorage(): any {
+    const URL_PATH = window.location.pathname;;
+    const storedParams = localStorage.getItem(`dataTablesParams${URL_PATH}`);
+    return storedParams ? JSON.parse(storedParams) : null; // Load params from localStorage
+  }
+
+  static loadSearchValue(): any {
+    const URL_PATH = window.location.pathname;;
+    const storedParams = localStorage.getItem(`dataTablesParams${URL_PATH}-searchvalue`);
+    return storedParams ? storedParams : ''; // Load params from localStorage
+  }
   static async fetchDatax(url: string, params: any): Promise<any> {
     try {
       ApiService.setHeader();
@@ -30,9 +37,22 @@ class DataTablesService {
     if (label) {
       label = label.replace(/_/g, " ");
       params.order = [`${label} ${sLabel.order}`];
-      console.log(params.order);
       await fetchData();
     }
+  }
+
+  static reverseSort(sortParams : any){
+    if(sortParams[0] != undefined){
+      var sortParamsSplit = sortParams[0].split(" ");
+      if(sortParamsSplit.length == 2){
+        return [sortParamsSplit[0],sortParamsSplit[1]];
+      }else if(sortParamsSplit.length == 3){
+        return [`${sortParamsSplit[0]}_${sortParamsSplit[1]}`,sortParamsSplit[2]];
+      }else{
+        return null;
+      }
+    }
+    return null;
   }
 
   static async changeRowsPerPageLimit(num: number, params: any, fetchData: Function): Promise<void> {
@@ -47,8 +67,6 @@ class DataTablesService {
   }
 
   static async filterData(params: any,paramsQuery :any, fetchData: Function): Promise<void> {
-    console.log(paramsQuery);
-    console.log(params);
     params.where = paramsQuery;
     params.offset = 0;
     await fetchData();

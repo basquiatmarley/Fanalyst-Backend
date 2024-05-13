@@ -21,6 +21,10 @@
         :header="tableHeader"
         :data="tableData"
         :total="countData"
+        :current-page="params.offset + 1"
+        :items-per-page="params.limit"
+        :sort-label="coloumDefaultLabel"
+        :sort-order="coloumDefaultSort"
         @page-change="changePage"
         @on-items-per-page-change="changeRowsPerPageLimit"
         @on-sort="handleSort"
@@ -113,10 +117,19 @@ export default defineComponent({
     ]);
 
     const loading = ref(true);
-    const searchQuery = ref("");
+    const searchQuery = ref(DataTablesService.loadSearchValue());
     const tableData = ref([]);
+
     const countData = ref<number>(0);
-    const params = ref(DataTablesService.loadParamsFromStorage() || { offset: 0, limit: 10, where: {}, order: {},include: ["sportsGroup"      ], });
+    const params = ref(DataTablesService.loadParamsFromStorage() || { offset: 0, limit: 10, where: {}, order: {},include: ["sportsGroup"], });
+    const reverseColumn = DataTablesService.reverseSort(params.value.order);
+    const coloumDefaultLabel = ref();
+    const coloumDefaultSort = ref();
+    if(reverseColumn != null){
+      coloumDefaultLabel.value = reverseColumn[0];
+      coloumDefaultSort.value = reverseColumn[1];
+    }
+
     const urlPagination = "/clubs/pagination";
     const fetchData = async () => {
       loading.value = true;
@@ -124,29 +137,33 @@ export default defineComponent({
       tableData.value = data.records;
       countData.value = data.totalCount;
       params.value = updatedParams; // Update params in the component
-      DataTablesService.saveParamsToStorage(updatedParams); 
+      DataTablesService.saveParamsToStorage(updatedParams,searchQuery.value); 
       loading.value = false;
+      
     };
 
-    const handleSort = async (sLabel) => {
+    const handleSort = async (sLabel: any) => {
       await DataTablesService.handleSort(sLabel,params.value, fetchData);
     };
 
-    const changeRowsPerPageLimit = async (num) => {
+    const changeRowsPerPageLimit = async (num: number) => {
       await DataTablesService.changeRowsPerPageLimit(num, params.value, fetchData);
     };
 
-    const changePage = async (num) => {
+    const changePage = async (num: number) => {
       await DataTablesService.changePage(num, params.value, fetchData);
     };
 
     const filterData = async () => {
-      const paramsQuery = {
-        or: [
+      var paramsQuery = {};
+      if(searchQuery.value.trim() != ''){
+        paramsQuery = {
+          or: [
           { name: { like: `%${searchQuery.value}%` } },
           {"$sportsGroup.title$": { like: `%${searchQuery.value}%` }}
-          ],
-      };
+            ],
+        };
+      }
       await DataTablesService.filterData(params.value, paramsQuery, fetchData);
     };
 
@@ -157,6 +174,9 @@ export default defineComponent({
     watch(searchQuery, filterData);
 
     return {
+      coloumDefaultLabel,
+      coloumDefaultSort,
+      params,
       changePage,
       changeRowsPerPageLimit,
       countData,

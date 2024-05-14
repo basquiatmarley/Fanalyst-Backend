@@ -183,21 +183,6 @@
                 >
                 <!--begin::Label-->
 
-                <!--begin::Label-->
-                <div class="col-lg-8 d-flex align-items-center">
-                  <div class="form-check form-check-solid form-switch fv-row">
-                    <input
-                      class="form-check-input w-45px h-30px"
-                      type="checkbox"
-                      value="0"
-                      :checked="record.status"
-                      v-model="record.status"
-                      id="status"
-                    />
-                    <label class="form-check-label" for="status"></label>
-                  </div>
-                </div>
-                <!--begin::Label-->
               </div>
               <!--end::Input group-->
             </div>

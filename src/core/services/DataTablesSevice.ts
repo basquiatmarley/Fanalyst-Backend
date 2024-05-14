@@ -62,7 +62,7 @@ class DataTablesService {
   }
 
   static async changePage(num: number, params: any, fetchData: Function): Promise<void> {
-    params.offset = num - 1;
+    params.offset = (num - 1) * params.limit;
     await fetchData();
   }
 

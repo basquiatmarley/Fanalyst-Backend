@@ -18,7 +18,7 @@
         :header="tableHeader"
         :data="tableData"
         :total="countData"
-        :current-page="params.offset + 1"
+        :current-page="(params.offset / params.limit) + 1"
         :items-per-page="params.limit"
         :sort-label="coloumDefaultLabel"
         :sort-order="coloumDefaultSort"

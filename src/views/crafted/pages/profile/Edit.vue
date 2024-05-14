@@ -239,7 +239,6 @@ import JwtService from "@/core/services/JwtService";
 
 interface UserParams {
       imageUrl: string;
-      status: boolean;
       firstName: string;
       lastName: string;
       email: string;
@@ -308,7 +307,6 @@ export default defineComponent({
         }
         var params: UserParams  = {
           imageUrl: record.value.imageUrl,
-          status: record.value.status ,
           firstName: record.value.firstName,
           lastName: record.value.lastName,
           email: record.value.email,

@@ -175,16 +175,6 @@
               </div>
               <!--end::Input group-->
 
-              <!--begin::Input group-->
-              <div class="row mb-0">
-                <!--begin::Label-->
-                <label class="col-lg-4 col-form-label fw-semibold fs-6"
-                  >Status</label
-                >
-                <!--begin::Label-->
-
-              </div>
-              <!--end::Input group-->
             </div>
             <!--end::Card body-->
 
